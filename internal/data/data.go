@@ -1,23 +1,23 @@
 package data
 
 import (
-	"plan-to-remind/internal/conf"
-	"github.com/go-kratos/kratos/v2/log"
+	"fmt"
 	"github.com/google/wire"
+	"gorm.io/gorm"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
+var ProviderSet = wire.NewSet(NewGormDb, NewData, NewGreeterRepo, NewCronSpecRepo)
 
 // Data .
 type Data struct {
-	// TODO wrapped database client
+	db *gorm.DB
 }
 
-// NewData .
-func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
-	cleanup := func() {
-		log.NewHelper(logger).Info("closing the data resources")
+func NewData(db *gorm.DB) (*Data, func(), error) {
+	closeFunc := func() {
+		// todo
+		fmt.Println("closing data...")
 	}
-	return &Data{}, cleanup, nil
+	return &Data{db: db}, closeFunc, nil
 }
