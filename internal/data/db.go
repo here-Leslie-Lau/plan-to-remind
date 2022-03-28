@@ -10,7 +10,7 @@ func NewGormDb(data *conf.Data) (*gorm.DB, func()) {
 	cfg := &db.DatabaseCfg{
 		Username:     data.Database.Username,
 		Password:     data.Database.Password,
-		Url:          data.Database.Source,
+		Url:          data.Database.Url,
 		DatabaseName: data.Database.Database,
 	}
 	conn, f := db.NewGormConn(cfg)

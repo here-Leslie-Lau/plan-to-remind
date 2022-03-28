@@ -2,6 +2,8 @@ GOPATH:=$(shell go env GOPATH)
 VERSION=$(shell git describe --tags --always)
 INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 API_PROTO_FILES=$(shell find api -name *.proto)
+# project path
+ROOT=$(shell pwd)
 
 .PHONY: init
 # init env
@@ -37,6 +39,9 @@ build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 
 .PHONY: generate
+# run plan-to-remind
+run:
+	$(ROOT)/bin/plan-to-remind -conf ./configs
 # generate
 generate:
 	go mod tidy

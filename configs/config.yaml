@@ -8,7 +8,11 @@ server:
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test
+    source: root:1234@tcp(127.0.0.1:3306)/plan-to-remind?charset=utf8&parseTime=True&loc=Local
+    username: root
+    password: "1234"
+    url: 127.0.0.1:3306
+    database_name: plan-to-remind
   redis:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
