@@ -1,6 +1,9 @@
 package db
 
-import "testing"
+import (
+	"plan-to-remind/internal/data/model"
+	"testing"
+)
 
 func TestNewGormConn(t *testing.T) {
 	cfg := &DatabaseCfg{
@@ -40,7 +43,15 @@ func TestAutoMigrate(t *testing.T) {
 	}
 	conn, f := NewGormConn(cfg)
 	defer f()
-
+	// create database
 	conn.cfg.DatabaseName = "demo"
-	conn.AutoMigrate()
+	conn.CreateDatabase()
+	// migrate
+	dst := []interface{}{
+		model.CronSpec{},
+	}
+	cfg.DatabaseName = "demo"
+	conn2, f2 := NewGormConn(cfg)
+	defer f2()
+	conn2.AutoMigrate(dst...)
 }

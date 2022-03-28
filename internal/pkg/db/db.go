@@ -42,9 +42,6 @@ func (u *UtilsDbConn) GetConn() *gorm.DB {
 }
 
 func (u *UtilsDbConn) AutoMigrate(dst ...interface{}) {
-	if err := u.createDatabase(); err != nil {
-		panic(fmt.Sprintf("create database failed,err:%v", err))
-	}
 	if err := u.conn.AutoMigrate(dst...); err != nil {
 		panic(fmt.Sprintf("auto migrate tables failed,err:%v", err))
 	}
@@ -52,14 +49,13 @@ func (u *UtilsDbConn) AutoMigrate(dst ...interface{}) {
 	fmt.Println(info)
 }
 
-func (u *UtilsDbConn) createDatabase() error {
+func (u *UtilsDbConn) CreateDatabase() {
 	db := "CREATE DATABASE IF NOT EXISTS " + u.cfg.DatabaseName + " CHARSET utf8mb4;"
 	if err := u.conn.Exec(db).Error; err != nil {
-		return err
+		panic(fmt.Sprintf("create database failed,err:%v", err))
 	}
 	info := fmt.Sprintf("create database: %s succeed!", u.cfg.DatabaseName)
 	fmt.Println(info)
-	return nil
 }
 
 // DropDb Requests for the outside service to delete the database

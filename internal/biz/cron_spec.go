@@ -22,3 +22,7 @@ type CronSpecUsecase struct {
 func NewCronSpecUsecase(repo CronSpecRepo) *CronSpecUsecase {
 	return &CronSpecUsecase{repo: repo}
 }
+
+func (uc *CronSpecUsecase) CreateCronSpec(ctx context.Context, cron *CronSpec) error {
+	return uc.repo.SaveCronSpec(ctx, cron)
+}

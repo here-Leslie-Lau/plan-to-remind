@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package api.plantoremind.v1.cron;
+
+//import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "plan-to-remind/api/plantoremind/v1/cron;cron";
+
+service Cron {
+  rpc CreateCron (CreateCronRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/cron/create"
+      body: "*"
+    };
+  };
+  rpc UpdateCron (UpdateCronRequest) returns (UpdateCronReply);
+  rpc DeleteCron (DeleteCronRequest) returns (DeleteCronReply);
+  rpc GetCron (GetCronRequest) returns (GetCronReply);
+  rpc ListCron (ListCronRequest) returns (ListCronReply);
+}
+
+message CreateCronRequest {
+  string desc = 1 [(validate.rules).string.min_len = 1];
+  string expression = 2 [(validate.rules).string.min_len = 1];
+}
+
+message UpdateCronRequest {}
+message UpdateCronReply {}
+
+message DeleteCronRequest {}
+message DeleteCronReply {}
+
+message GetCronRequest {}
+message GetCronReply {}
+
+message ListCronRequest {}
+message ListCronReply {}

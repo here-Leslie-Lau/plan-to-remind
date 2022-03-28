@@ -3,36 +3,32 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: Cron API
     version: 0.0.1
 paths:
-    /helloworld/{name}:
-        get:
+    /api/v1/cron/create:
+        post:
             tags:
-                - Greeter
-            description: Sends a greeting
-            operationId: Greeter_SayHello
-            parameters:
-                - name: name
-                  in: path
-                  required: true
-                  schema:
-                    type: string
+                - Cron
+            operationId: Cron_CreateCron
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateCronRequest'
+                required: true
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/.helloworld.v1.HelloReply'
+                    content: {}
 components:
     schemas:
-        .helloworld.v1.HelloReply:
+        CreateCronRequest:
             type: object
             properties:
-                message:
+                desc:
                     type: string
-            description: The response message containing the greetings
+                expression:
+                    type: string
 tags:
-    - name: Greeter
+    - name: Cron
