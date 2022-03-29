@@ -23,7 +23,7 @@ func TestDropDb(t *testing.T) {
 		Password:     "1234",
 		Url:          "127.0.0.1:3306",
 		Port:         "3306",
-		DatabaseName: "demo",
+		DatabaseName: "plan_to_remind",
 	}
 	conn, f := NewGormConn(cfg)
 	defer f()
@@ -45,7 +45,7 @@ func TestAutoMigrate(t *testing.T) {
 	defer f()
 	// create database
 	conn.cfg.DatabaseName = "demo"
-	conn.CreateDatabase()
+	conn.CreateDatabase("")
 	// migrate
 	dst := []interface{}{
 		model.CronSpec{},

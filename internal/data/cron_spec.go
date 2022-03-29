@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"plan-to-remind/internal/biz"
+	"plan-to-remind/internal/data/model"
 )
 
 var _ biz.CronSpecRepo = (*cronSpecRepo)(nil)
@@ -12,7 +13,11 @@ type cronSpecRepo struct {
 }
 
 func (c *cronSpecRepo) SaveCronSpec(ctx context.Context, cron *biz.CronSpec) error {
-	panic("implement me")
+	res := &model.CronSpec{
+		Desc:       cron.Desc,
+		Expression: cron.Expression,
+	}
+	return c.data.db.Model(&model.CronSpec{}).Create(res).Error
 }
 
 func (c *cronSpecRepo) GetCronSpec(ctx context.Context, id uint64) (*biz.CronSpec, error) {

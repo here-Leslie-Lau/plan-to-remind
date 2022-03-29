@@ -55,6 +55,11 @@ all:
 	make config;
 	make generate;
 
+## init-local
+init-local:
+	@echo "init local db..."
+	@./scripts/init_local.sh $(ROOT)
+
 # show help
 help:
 	@echo ''

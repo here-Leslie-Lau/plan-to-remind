@@ -41,6 +41,10 @@ func (u *UtilsDbConn) GetConn() *gorm.DB {
 	return u.conn
 }
 
+func (u *UtilsDbConn) GetCfg() *DatabaseCfg {
+	return u.cfg
+}
+
 func (u *UtilsDbConn) AutoMigrate(dst ...interface{}) {
 	if err := u.conn.AutoMigrate(dst...); err != nil {
 		panic(fmt.Sprintf("auto migrate tables failed,err:%v", err))
@@ -49,12 +53,16 @@ func (u *UtilsDbConn) AutoMigrate(dst ...interface{}) {
 	fmt.Println(info)
 }
 
-func (u *UtilsDbConn) CreateDatabase() {
-	db := "CREATE DATABASE IF NOT EXISTS " + u.cfg.DatabaseName + " CHARSET utf8mb4;"
+func (u *UtilsDbConn) CreateDatabase(database string) {
+	name := u.cfg.DatabaseName
+	if database != "" {
+		name = database
+	}
+	db := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s CHARSET utf8mb4;", name)
 	if err := u.conn.Exec(db).Error; err != nil {
 		panic(fmt.Sprintf("create database failed,err:%v", err))
 	}
-	info := fmt.Sprintf("create database: %s succeed!", u.cfg.DatabaseName)
+	info := fmt.Sprintf("create database: %s succeed!", name)
 	fmt.Println(info)
 }
 
