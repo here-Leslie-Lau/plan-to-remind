@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	v1 "plan-to-remind/api/plantoremind/v1/cron"
 	"plan-to-remind/internal/conf"
@@ -10,9 +11,10 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeter *service.CronService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, cron *service.CronService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
+			validate.Validator(),
 			recovery.Recovery(),
 		),
 	}
@@ -26,6 +28,6 @@ func NewGRPCServer(c *conf.Server, greeter *service.CronService, logger log.Logg
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 	srv := grpc.NewServer(opts...)
-	v1.RegisterCronServer(srv, greeter)
+	v1.RegisterCronServer(srv, cron)
 	return srv
 }

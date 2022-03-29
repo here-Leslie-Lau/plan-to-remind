@@ -21,6 +21,7 @@ func NewCronService(uc *biz.CronSpecUsecase, logger log.Logger) *CronService {
 }
 
 func (s *CronService) CreateCron(ctx context.Context, req *v1.CreateCronRequest) (*emptypb.Empty, error) {
+
 	err := s.uc.CreateCronSpec(ctx, &biz.CronSpec{
 		Desc:       req.Desc,
 		Expression: req.Expression,
