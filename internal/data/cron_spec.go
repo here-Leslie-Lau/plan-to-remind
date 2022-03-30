@@ -29,7 +29,7 @@ func (c *cronSpecRepo) ListCronSpec(ctx context.Context, pageNum, pageSize int64
 }
 
 func (c *cronSpecRepo) UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error {
-	panic("implement me")
+	return c.data.db.Model(&model.CronSpec{}).Where("id = ?", id).Updates(params).Error
 }
 
 func NewCronSpecRepo(data *Data) biz.CronSpecRepo {

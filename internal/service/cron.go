@@ -21,7 +21,6 @@ func NewCronService(uc *biz.CronSpecUsecase, logger log.Logger) *CronService {
 }
 
 func (s *CronService) CreateCron(ctx context.Context, req *v1.CreateCronRequest) (*emptypb.Empty, error) {
-
 	err := s.uc.CreateCronSpec(ctx, &biz.CronSpec{
 		Desc:       req.Desc,
 		Expression: req.Expression,
@@ -33,8 +32,17 @@ func (s *CronService) CreateCron(ctx context.Context, req *v1.CreateCronRequest)
 	return new(emptypb.Empty), nil
 }
 
-func (s *CronService) UpdateCron(ctx context.Context, req *v1.UpdateCronRequest) (*v1.UpdateCronReply, error) {
-	return &v1.UpdateCronReply{}, nil
+func (s *CronService) UpdateCron(ctx context.Context, req *v1.UpdateCronRequest) (*emptypb.Empty, error) {
+	err := s.uc.UpdateCronSpec(ctx, &biz.CronSpec{
+		ID:         req.Id,
+		Desc:       req.Desc,
+		Expression: req.Expression,
+	})
+	if err != nil {
+		s.log.Errorw("UpdateCron UpdateCronSpec error", "req:", req, "err:", err)
+		return nil, err
+	}
+	return new(emptypb.Empty), nil
 }
 
 func (s *CronService) DeleteCron(ctx context.Context, req *v1.DeleteCronRequest) (*v1.DeleteCronReply, error) {

@@ -26,3 +26,14 @@ func NewCronSpecUsecase(repo CronSpecRepo) *CronSpecUsecase {
 func (uc *CronSpecUsecase) CreateCronSpec(ctx context.Context, cron *CronSpec) error {
 	return uc.repo.SaveCronSpec(ctx, cron)
 }
+
+func (uc *CronSpecUsecase) UpdateCronSpec(ctx context.Context, cron *CronSpec) error {
+	param := make(map[string]interface{}, 3)
+	if cron.Desc != "" {
+		param["desc"] = cron.Desc
+	}
+	if cron.Expression != "" {
+		param["expression"] = cron.Expression
+	}
+	return uc.repo.UpdateCronSpec(ctx, cron.ID, param)
+}

@@ -16,7 +16,12 @@ service Cron {
       body: "*"
     };
   };
-  rpc UpdateCron (UpdateCronRequest) returns (UpdateCronReply);
+  rpc UpdateCron (UpdateCronRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/cron/update"
+      body: "*"
+    };
+  };
   rpc DeleteCron (DeleteCronRequest) returns (DeleteCronReply);
   rpc GetCron (GetCronRequest) returns (GetCronReply);
   rpc ListCron (ListCronRequest) returns (ListCronReply);
@@ -27,8 +32,13 @@ message CreateCronRequest {
   string expression = 2 [(validate.rules).string.min_len = 1];
 }
 
-message UpdateCronRequest {}
-message UpdateCronReply {}
+message UpdateCronRequest {
+  uint64 id = 1 [(validate.rules).uint64.gt = 0];
+  // 时间描述
+  string desc = 2;
+  // cron表达式
+  string expression = 3;
+}
 
 message DeleteCronRequest {}
 message DeleteCronReply {}
