@@ -21,7 +21,15 @@ func (c *cronSpecRepo) SaveCronSpec(ctx context.Context, cron *biz.CronSpec) err
 }
 
 func (c *cronSpecRepo) GetCronSpec(ctx context.Context, id uint64) (*biz.CronSpec, error) {
-	panic("implement me")
+	result := &model.CronSpec{}
+	if err := c.data.db.Model(&model.CronSpec{}).Where("id = ?", id).First(result).Error; err != nil {
+		return nil, err
+	}
+	return &biz.CronSpec{
+		ID:         uint64(result.ID),
+		Desc:       result.Desc,
+		Expression: result.Expression,
+	}, nil
 }
 
 func (c *cronSpecRepo) ListCronSpec(ctx context.Context, pageNum, pageSize int64) ([]*biz.CronSpec, error) {

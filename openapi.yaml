@@ -21,6 +21,24 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /api/v1/cron/get:
+        post:
+            tags:
+                - Cron
+            operationId: Cron_GetCron
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetCronRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetCronReply'
     /api/v1/cron/update:
         post:
             tags:
@@ -45,6 +63,29 @@ components:
                     type: string
                 expression:
                     type: string
+        CronData:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: id
+                    format: uint64
+                desc:
+                    type: string
+                expression:
+                    type: string
+                    description: cron表达式
+        GetCronReply:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/CronData'
+        GetCronRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint64
         UpdateCronRequest:
             type: object
             properties:

@@ -37,3 +37,7 @@ func (uc *CronSpecUsecase) UpdateCronSpec(ctx context.Context, cron *CronSpec) e
 	}
 	return uc.repo.UpdateCronSpec(ctx, cron.ID, param)
 }
+
+func (uc *CronSpecUsecase) GetCronSpec(ctx context.Context, id uint64) (*CronSpec, error) {
+	return uc.repo.GetCronSpec(ctx, id)
+}

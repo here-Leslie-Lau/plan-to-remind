@@ -23,7 +23,12 @@ service Cron {
     };
   };
   rpc DeleteCron (DeleteCronRequest) returns (DeleteCronReply);
-  rpc GetCron (GetCronRequest) returns (GetCronReply);
+  rpc GetCron (GetCronRequest) returns (GetCronReply) {
+    option (google.api.http) = {
+      post: "/api/v1/cron/get"
+      body: "*"
+    };
+  };
   rpc ListCron (ListCronRequest) returns (ListCronReply);
 }
 
@@ -43,8 +48,20 @@ message UpdateCronRequest {
 message DeleteCronRequest {}
 message DeleteCronReply {}
 
-message GetCronRequest {}
-message GetCronReply {}
+message CronData {
+  // id
+  uint64 id = 1;
+  string desc = 2;
+  // cron表达式
+  string expression = 3;
+}
+
+message GetCronRequest {
+  uint64 id = 1 [(validate.rules).uint64.gt = 0];
+}
+message GetCronReply {
+  CronData data = 1;
+}
 
 message ListCronRequest {}
 message ListCronReply {}

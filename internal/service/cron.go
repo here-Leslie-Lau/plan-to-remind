@@ -50,7 +50,17 @@ func (s *CronService) DeleteCron(ctx context.Context, req *v1.DeleteCronRequest)
 }
 
 func (s *CronService) GetCron(ctx context.Context, req *v1.GetCronRequest) (*v1.GetCronReply, error) {
-	return &v1.GetCronReply{}, nil
+	cronSpec, err := s.uc.GetCronSpec(ctx, req.Id)
+	if err != nil {
+		s.log.Warnw("GetCron GetCronSpec error", "id:", req.Id, "err:", err)
+		return nil, err
+	}
+	data := &v1.CronData{
+		Id:         cronSpec.ID,
+		Desc:       cronSpec.Desc,
+		Expression: cronSpec.Expression,
+	}
+	return &v1.GetCronReply{Data: data}, nil
 }
 
 func (s *CronService) ListCron(ctx context.Context, req *v1.ListCronRequest) (*v1.ListCronReply, error) {
