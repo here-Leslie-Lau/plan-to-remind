@@ -11,10 +11,18 @@ type CronSpec struct {
 	Expression string `json:"expression"`
 }
 
+type CronSpecFilter struct {
+	OffSet     int64  `json:"off_set"`
+	Limit      int64  `json:"limit"`
+	TotalCount int64  `json:"total_count"`
+	TotalPage  int64  `json:"total_page"`
+	OrderBy    string `json:"order_by"`
+}
+
 type CronSpecRepo interface {
 	SaveCronSpec(ctx context.Context, cron *CronSpec) error
 	GetCronSpec(ctx context.Context, id uint64) (*CronSpec, error)
-	ListCronSpec(ctx context.Context, pageNum, pageSize int64) ([]*CronSpec, error)
+	ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error)
 	UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error
 }
 
@@ -44,9 +52,14 @@ func (uc *CronSpecUsecase) UpdateCronSpec(ctx context.Context, cron *CronSpec) e
 func (uc *CronSpecUsecase) GetCronSpec(ctx context.Context, id uint64) (*CronSpec, error) {
 	return uc.repo.GetCronSpec(ctx, id)
 }
+
 func (uc *CronSpecUsecase) DeleteCronSpec(ctx context.Context, id uint64) error {
 	param := map[string]interface{}{
 		"deleted_at": time.Now(),
 	}
 	return uc.repo.UpdateCronSpec(ctx, id, param)
+}
+
+func (uc *CronSpecUsecase) ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
+	return nil, nil
 }

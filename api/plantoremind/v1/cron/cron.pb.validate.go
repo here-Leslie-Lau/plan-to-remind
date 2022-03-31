@@ -755,6 +755,12 @@ func (m *ListCronRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Offset
+
+	// no validation rules for Limit
+
+	// no validation rules for OrderBy
+
 	if len(errors) > 0 {
 		return ListCronRequestMultiError(errors)
 	}
@@ -854,6 +860,40 @@ func (m *ListCronReply) validate(all bool) error {
 	}
 
 	var errors []error
+
+	for idx, item := range m.GetList() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListCronReplyValidationError{
+						field:  fmt.Sprintf("List[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListCronReplyValidationError{
+						field:  fmt.Sprintf("List[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListCronReplyValidationError{
+					field:  fmt.Sprintf("List[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	if len(errors) > 0 {
 		return ListCronReplyMultiError(errors)

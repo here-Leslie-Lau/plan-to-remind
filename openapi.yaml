@@ -54,6 +54,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetCronReply'
+    /api/v1/cron/list:
+        post:
+            tags:
+                - Cron
+            operationId: Cron_ListCron
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListCronRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListCronReply'
     /api/v1/cron/update:
         post:
             tags:
@@ -107,6 +125,27 @@ components:
                 id:
                     type: integer
                     format: uint64
+        ListCronReply:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CronData'
+        ListCronRequest:
+            type: object
+            properties:
+                offset:
+                    type: integer
+                    description: 偏移量
+                    format: int64
+                limit:
+                    type: integer
+                    description: 每页多少条
+                    format: int64
+                orderBy:
+                    type: string
+                    description: 排序
         UpdateCronRequest:
             type: object
             properties:

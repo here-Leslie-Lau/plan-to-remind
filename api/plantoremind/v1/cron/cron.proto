@@ -34,7 +34,12 @@ service Cron {
       body: "*"
     };
   };
-  rpc ListCron (ListCronRequest) returns (ListCronReply);
+  rpc ListCron (ListCronRequest) returns (ListCronReply) {
+    option (google.api.http) = {
+      post: "/api/v1/cron/list"
+      body: "*"
+    };
+  };
 }
 
 message CreateCronRequest {
@@ -69,5 +74,14 @@ message GetCronReply {
   CronData data = 1;
 }
 
-message ListCronRequest {}
-message ListCronReply {}
+message ListCronRequest {
+  // 偏移量
+  int64 offset = 1;
+  // 每页多少条
+  int64 limit = 2;
+  // 排序
+  string order_by = 3;
+}
+message ListCronReply {
+  repeated CronData list = 1;
+}

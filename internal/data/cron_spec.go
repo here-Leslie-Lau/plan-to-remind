@@ -32,8 +32,8 @@ func (c *cronSpecRepo) GetCronSpec(ctx context.Context, id uint64) (*biz.CronSpe
 	}, nil
 }
 
-func (c *cronSpecRepo) ListCronSpec(ctx context.Context, pageNum, pageSize int64) ([]*biz.CronSpec, error) {
-	panic("implement me")
+func (c *cronSpecRepo) ListCronSpec(ctx context.Context, f *biz.CronSpecFilter) ([]*biz.CronSpec, error) {
+	panic("implement me!")
 }
 
 func (c *cronSpecRepo) UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error {
