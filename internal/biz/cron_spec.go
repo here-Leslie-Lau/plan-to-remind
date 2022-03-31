@@ -1,6 +1,9 @@
 package biz
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type CronSpec struct {
 	ID         uint64 `json:"id"`
@@ -40,4 +43,10 @@ func (uc *CronSpecUsecase) UpdateCronSpec(ctx context.Context, cron *CronSpec) e
 
 func (uc *CronSpecUsecase) GetCronSpec(ctx context.Context, id uint64) (*CronSpec, error) {
 	return uc.repo.GetCronSpec(ctx, id)
+}
+func (uc *CronSpecUsecase) DeleteCronSpec(ctx context.Context, id uint64) error {
+	param := map[string]interface{}{
+		"deleted_at": time.Now(),
+	}
+	return uc.repo.UpdateCronSpec(ctx, id, param)
 }

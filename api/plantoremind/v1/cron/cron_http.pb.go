@@ -20,6 +20,7 @@ const _ = http.SupportPackageIsVersion1
 
 type CronHTTPServer interface {
 	CreateCron(context.Context, *CreateCronRequest) (*emptypb.Empty, error)
+	DeleteCron(context.Context, *DeleteCronRequest) (*emptypb.Empty, error)
 	GetCron(context.Context, *GetCronRequest) (*GetCronReply, error)
 	UpdateCron(context.Context, *UpdateCronRequest) (*emptypb.Empty, error)
 }
@@ -28,6 +29,7 @@ func RegisterCronHTTPServer(s *http.Server, srv CronHTTPServer) {
 	r := s.Route("/")
 	r.POST("/api/v1/cron/create", _Cron_CreateCron0_HTTP_Handler(srv))
 	r.POST("/api/v1/cron/update", _Cron_UpdateCron0_HTTP_Handler(srv))
+	r.POST("/api/v1/cron/delete", _Cron_DeleteCron0_HTTP_Handler(srv))
 	r.POST("/api/v1/cron/get", _Cron_GetCron0_HTTP_Handler(srv))
 }
 
@@ -69,6 +71,25 @@ func _Cron_UpdateCron0_HTTP_Handler(srv CronHTTPServer) func(ctx http.Context) e
 	}
 }
 
+func _Cron_DeleteCron0_HTTP_Handler(srv CronHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteCronRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/api.plantoremind.v1.cron.Cron/DeleteCron")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteCron(ctx, req.(*DeleteCronRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _Cron_GetCron0_HTTP_Handler(srv CronHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in GetCronRequest
@@ -90,6 +111,7 @@ func _Cron_GetCron0_HTTP_Handler(srv CronHTTPServer) func(ctx http.Context) erro
 
 type CronHTTPClient interface {
 	CreateCron(ctx context.Context, req *CreateCronRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteCron(ctx context.Context, req *DeleteCronRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetCron(ctx context.Context, req *GetCronRequest, opts ...http.CallOption) (rsp *GetCronReply, err error)
 	UpdateCron(ctx context.Context, req *UpdateCronRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
@@ -107,6 +129,19 @@ func (c *CronHTTPClientImpl) CreateCron(ctx context.Context, in *CreateCronReque
 	pattern := "/api/v1/cron/create"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation("/api.plantoremind.v1.cron.Cron/CreateCron"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *CronHTTPClientImpl) DeleteCron(ctx context.Context, in *DeleteCronRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/v1/cron/delete"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation("/api.plantoremind.v1.cron.Cron/DeleteCron"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

@@ -22,7 +22,12 @@ service Cron {
       body: "*"
     };
   };
-  rpc DeleteCron (DeleteCronRequest) returns (DeleteCronReply);
+  rpc DeleteCron (DeleteCronRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/cron/delete"
+      body: "*"
+    };
+  };
   rpc GetCron (GetCronRequest) returns (GetCronReply) {
     option (google.api.http) = {
       post: "/api/v1/cron/get"
@@ -45,8 +50,9 @@ message UpdateCronRequest {
   string expression = 3;
 }
 
-message DeleteCronRequest {}
-message DeleteCronReply {}
+message DeleteCronRequest {
+  uint64 id = 1 [(validate.rules).uint64.gt = 0];
+}
 
 message CronData {
   // id

@@ -21,6 +21,21 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /api/v1/cron/delete:
+        post:
+            tags:
+                - Cron
+            operationId: Cron_DeleteCron
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteCronRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /api/v1/cron/get:
         post:
             tags:
@@ -75,6 +90,12 @@ components:
                 expression:
                     type: string
                     description: cron表达式
+        DeleteCronRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint64
         GetCronReply:
             type: object
             properties:

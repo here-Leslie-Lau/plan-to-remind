@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"gorm.io/gorm"
 	"plan-to-remind/internal/biz"
 
 	v1 "plan-to-remind/api/plantoremind/v1/cron"
@@ -45,15 +46,22 @@ func (s *CronService) UpdateCron(ctx context.Context, req *v1.UpdateCronRequest)
 	return new(emptypb.Empty), nil
 }
 
-func (s *CronService) DeleteCron(ctx context.Context, req *v1.DeleteCronRequest) (*v1.DeleteCronReply, error) {
-	return &v1.DeleteCronReply{}, nil
+func (s *CronService) DeleteCron(ctx context.Context, req *v1.DeleteCronRequest) (*emptypb.Empty, error) {
+	if err := s.uc.DeleteCronSpec(ctx, req.Id); err != nil {
+		s.log.Errorw("DeleteCron DeleteCronSpec error", "id:", req.Id, "err;", err)
+		return nil, err
+	}
+	return new(emptypb.Empty), nil
 }
 
 func (s *CronService) GetCron(ctx context.Context, req *v1.GetCronRequest) (*v1.GetCronReply, error) {
 	cronSpec, err := s.uc.GetCronSpec(ctx, req.Id)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		s.log.Warnw("GetCron GetCronSpec error", "id:", req.Id, "err:", err)
 		return nil, err
+	}
+	if cronSpec == nil {
+		return new(v1.GetCronReply), nil
 	}
 	data := &v1.CronData{
 		Id:         cronSpec.ID,

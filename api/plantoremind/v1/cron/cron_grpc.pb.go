@@ -25,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CronClient interface {
 	CreateCron(ctx context.Context, in *CreateCronRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateCron(ctx context.Context, in *UpdateCronRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	DeleteCron(ctx context.Context, in *DeleteCronRequest, opts ...grpc.CallOption) (*DeleteCronReply, error)
+	DeleteCron(ctx context.Context, in *DeleteCronRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetCron(ctx context.Context, in *GetCronRequest, opts ...grpc.CallOption) (*GetCronReply, error)
 	ListCron(ctx context.Context, in *ListCronRequest, opts ...grpc.CallOption) (*ListCronReply, error)
 }
@@ -56,8 +56,8 @@ func (c *cronClient) UpdateCron(ctx context.Context, in *UpdateCronRequest, opts
 	return out, nil
 }
 
-func (c *cronClient) DeleteCron(ctx context.Context, in *DeleteCronRequest, opts ...grpc.CallOption) (*DeleteCronReply, error) {
-	out := new(DeleteCronReply)
+func (c *cronClient) DeleteCron(ctx context.Context, in *DeleteCronRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.plantoremind.v1.cron.Cron/DeleteCron", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (c *cronClient) ListCron(ctx context.Context, in *ListCronRequest, opts ...
 type CronServer interface {
 	CreateCron(context.Context, *CreateCronRequest) (*emptypb.Empty, error)
 	UpdateCron(context.Context, *UpdateCronRequest) (*emptypb.Empty, error)
-	DeleteCron(context.Context, *DeleteCronRequest) (*DeleteCronReply, error)
+	DeleteCron(context.Context, *DeleteCronRequest) (*emptypb.Empty, error)
 	GetCron(context.Context, *GetCronRequest) (*GetCronReply, error)
 	ListCron(context.Context, *ListCronRequest) (*ListCronReply, error)
 	mustEmbedUnimplementedCronServer()
@@ -105,7 +105,7 @@ func (UnimplementedCronServer) CreateCron(context.Context, *CreateCronRequest) (
 func (UnimplementedCronServer) UpdateCron(context.Context, *UpdateCronRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCron not implemented")
 }
-func (UnimplementedCronServer) DeleteCron(context.Context, *DeleteCronRequest) (*DeleteCronReply, error) {
+func (UnimplementedCronServer) DeleteCron(context.Context, *DeleteCronRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCron not implemented")
 }
 func (UnimplementedCronServer) GetCron(context.Context, *GetCronRequest) (*GetCronReply, error) {
