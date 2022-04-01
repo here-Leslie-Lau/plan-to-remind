@@ -72,5 +72,24 @@ func (s *CronService) GetCron(ctx context.Context, req *v1.GetCronRequest) (*v1.
 }
 
 func (s *CronService) ListCron(ctx context.Context, req *v1.ListCronRequest) (*v1.ListCronReply, error) {
-	return &v1.ListCronReply{}, nil
+	f := &biz.CronSpecFilter{
+		OffSet:  req.Offset,
+		Limit:   req.Limit,
+		OrderBy: req.OrderBy,
+	}
+	cronSpec, err := s.uc.ListCronSpec(ctx, f)
+	if err != nil {
+		s.log.Warnw("ListCron ListCronSpec error", "req:", req, "err:", err)
+		return nil, err
+	}
+
+	var list []*v1.CronData
+	for _, spec := range cronSpec {
+		list = append(list, &v1.CronData{
+			Id:         spec.ID,
+			Desc:       spec.Desc,
+			Expression: spec.Expression,
+		})
+	}
+	return &v1.ListCronReply{List: list}, nil
 }

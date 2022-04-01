@@ -42,6 +42,11 @@ api:
  	       --openapi_out==paths=source_relative:. \
 	       $(API_PROTO_FILES)
 
+.PHONY: lint
+# lint code
+lint:
+	golangci-lint run -v
+
 .PHONY: build
 # build
 build:

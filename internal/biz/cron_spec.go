@@ -14,8 +14,6 @@ type CronSpec struct {
 type CronSpecFilter struct {
 	OffSet     int64  `json:"off_set"`
 	Limit      int64  `json:"limit"`
-	TotalCount int64  `json:"total_count"`
-	TotalPage  int64  `json:"total_page"`
 	OrderBy    string `json:"order_by"`
 }
 
@@ -61,5 +59,5 @@ func (uc *CronSpecUsecase) DeleteCronSpec(ctx context.Context, id uint64) error 
 }
 
 func (uc *CronSpecUsecase) ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
-	return nil, nil
+	return uc.repo.ListCronSpec(ctx, f)
 }

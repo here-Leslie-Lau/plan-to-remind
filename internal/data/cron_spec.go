@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"gorm.io/gorm"
 	"plan-to-remind/internal/biz"
 	"plan-to-remind/internal/data/model"
 )
@@ -33,7 +34,29 @@ func (c *cronSpecRepo) GetCronSpec(ctx context.Context, id uint64) (*biz.CronSpe
 }
 
 func (c *cronSpecRepo) ListCronSpec(ctx context.Context, f *biz.CronSpecFilter) ([]*biz.CronSpec, error) {
-	panic("implement me!")
+	var list []*model.CronSpec
+	if err := c.data.db.Scopes(limitCronSpecByFilter(f), limitOrderBy(f.OrderBy)).Find(&list).Error; err != nil {
+		return nil, err
+	}
+	var result []*biz.CronSpec
+	// maybe need to use go-copier
+	for _, cronSpec := range list {
+		result = append(result, &biz.CronSpec{
+			ID:         uint64(cronSpec.ID),
+			Desc:       cronSpec.Desc,
+			Expression: cronSpec.Expression,
+		})
+	}
+	return result, nil
+}
+
+func limitCronSpecByFilter(f *biz.CronSpecFilter) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if f.OffSet > 0 && f.Limit > 0 {
+			db = db.Offset(int(f.OffSet-1)).Limit(int(f.Limit))
+		}
+		return db
+	}
 }
 
 func (c *cronSpecRepo) UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error {

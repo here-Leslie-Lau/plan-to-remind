@@ -16,3 +16,12 @@ func NewGormDb(data *conf.Data) (*gorm.DB, func()) {
 	conn, f := db.NewGormConn(cfg)
 	return conn.GetConn(), f
 }
+
+func limitOrderBy(orderBy string) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if orderBy == "" {
+			return db
+		}
+		return db.Order(orderBy)
+	}
+}
