@@ -4,7 +4,7 @@ just a tiny project to plan to remind
 
 version management
 
-- v0.1: 时间表curd
+- [x] v0.1: 时间表curd 
 - v0.2: 计划表curd
 - v0.3: 启动定时器，计划推送
 - v0.4: 延迟队列
