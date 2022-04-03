@@ -36,3 +36,7 @@ type PlanRepo interface {
 type PlanUsecase struct {
 	repo PlanRepo
 }
+
+func (uc *PlanUsecase) GetPlanByID(ctx context.Context, id uint64) (*Plan, error) {
+	return uc.repo.GetPlan(ctx, id)
+}

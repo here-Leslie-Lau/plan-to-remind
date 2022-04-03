@@ -18,12 +18,12 @@ func (c *cronSpecRepo) SaveCronSpec(ctx context.Context, cron *biz.CronSpec) err
 		Desc:       cron.Desc,
 		Expression: cron.Expression,
 	}
-	return c.data.db.Model(&model.CronSpec{}).Create(res).Error
+	return c.data.WithCtx(ctx).Model(&model.CronSpec{}).Create(res).Error
 }
 
 func (c *cronSpecRepo) GetCronSpec(ctx context.Context, id uint64) (*biz.CronSpec, error) {
 	result := &model.CronSpec{}
-	if err := c.data.db.Model(&model.CronSpec{}).Where("id = ?", id).First(result).Error; err != nil {
+	if err := c.data.WithCtx(ctx).Model(&model.CronSpec{}).Where("id = ?", id).First(result).Error; err != nil {
 		return nil, err
 	}
 	return &biz.CronSpec{
@@ -35,7 +35,7 @@ func (c *cronSpecRepo) GetCronSpec(ctx context.Context, id uint64) (*biz.CronSpe
 
 func (c *cronSpecRepo) ListCronSpec(ctx context.Context, f *biz.CronSpecFilter) ([]*biz.CronSpec, error) {
 	var list []*model.CronSpec
-	if err := c.data.db.Scopes(limitCronSpecByFilter(f), limitOrderBy(f.OrderBy)).Find(&list).Error; err != nil {
+	if err := c.data.WithCtx(ctx).Scopes(limitCronSpecByFilter(f), limitOrderBy(f.OrderBy)).Find(&list).Error; err != nil {
 		return nil, err
 	}
 	var result []*biz.CronSpec
@@ -60,7 +60,7 @@ func limitCronSpecByFilter(f *biz.CronSpecFilter) func(db *gorm.DB) *gorm.DB {
 }
 
 func (c *cronSpecRepo) UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error {
-	return c.data.db.Model(&model.CronSpec{}).Where("id = ?", id).Updates(params).Error
+	return c.data.WithCtx(ctx).Model(&model.CronSpec{}).Where("id = ?", id).Updates(params).Error
 }
 
 func NewCronSpecRepo(data *Data) biz.CronSpecRepo {
