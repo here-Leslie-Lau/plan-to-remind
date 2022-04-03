@@ -10,11 +10,13 @@ type Plan struct {
 	// 计划等级
 	Level uint8 `json:"level"`
 	// 计划时间表ID
-	DescId uint64 `json:"desc_id"`
+	CronId uint64 `json:"cron_id"`
 	// 计划失效时间
 	DeadTime int64 `json:"dead_time"`
 	// 计划名称
 	Name string `json:"name"`
+	// 计划时间表描述
+	CronDesc string `json:"cron_desc"`
 }
 
 type PlanFilter struct {

@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package api.plantoremind.v1.plan;
+
+//import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "plan-to-remind/api/plantoremind/v1/plan;plan";
+
+service Plan {
+  rpc CreatePlan (CreatePlanRequest) returns (google.protobuf.Empty);
+  rpc UpdatePlan (UpdatePlanRequest) returns (UpdatePlanReply);
+  rpc DeletePlan (DeletePlanRequest) returns (DeletePlanReply);
+  rpc GetPlan (GetPlanRequest) returns (GetPlanReply) {
+    option (google.api.http) = {
+      post: "/api/v1/plan/get"
+      body: "*"
+    };
+  };
+  rpc ListPlan (ListPlanRequest) returns (ListPlanReply);
+}
+
+message CreatePlanRequest {}
+
+message UpdatePlanRequest {}
+message UpdatePlanReply {}
+
+message DeletePlanRequest {}
+message DeletePlanReply {}
+
+message PlanData {
+  uint64 id = 1;
+  // 状态
+  uint32 state = 2;
+  // 等级
+  uint32 level = 3;
+  // 计划时间表ID
+  uint64 cron_id = 4;
+  // 计划失效时间
+  int64 dead_time = 5;
+  // 计划名称
+  string name = 6;
+  // 计划时间表描述
+  string cron_desc = 7;
+}
+
+message GetPlanRequest {
+  uint64 id = 1 [(validate.rules).uint64.gt = 0];
+}
+message GetPlanReply {
+  PlanData plan = 1;
+}
+
+message ListPlanRequest {}
+message ListPlanReply {}
