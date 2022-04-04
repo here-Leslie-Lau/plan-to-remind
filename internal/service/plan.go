@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/biz"
+	"plan-to-remind/internal/pkg/format"
+	"time"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	v1 "plan-to-remind/api/plantoremind/v1/plan"
@@ -21,6 +23,22 @@ func NewPlanService(uc *biz.PlanUsecase, logger log.Logger) *PlanService {
 }
 
 func (s *PlanService) CreatePlan(ctx context.Context, req *v1.CreatePlanRequest) (*emptypb.Empty, error) {
+	deadTime, err := time.Parse(format.DateSecondLayout, req.DeadTime)
+	if err != nil {
+		s.log.Warnw("CreatePlan time parse error", "dead_time:", req.DeadTime, "err:", err)
+		return nil, err
+	}
+	err = s.uc.CreatePlan(ctx, &biz.Plan{
+		State:    uint8(req.State),
+		Level:    uint8(req.Level),
+		CronId:   req.CronId,
+		DeadTime: deadTime.Unix(),
+		Name:     req.Name,
+	})
+	if err != nil {
+		s.log.Errorw("CreatePlan biz.CreatePlan err", "req:", req, "err:", err)
+		return nil, err
+	}
 	return &emptypb.Empty{}, nil
 }
 func (s *PlanService) UpdatePlan(ctx context.Context, req *v1.UpdatePlanRequest) (*v1.UpdatePlanReply, error) {

@@ -5,13 +5,14 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	v1 "plan-to-remind/api/plantoremind/v1/cron"
+	cronv1 "plan-to-remind/api/plantoremind/v1/cron"
+	planv1 "plan-to-remind/api/plantoremind/v1/plan"
 	"plan-to-remind/internal/conf"
 	"plan-to-remind/internal/service"
 )
 
 // NewHTTPServer new a HTTP server.
-func NewHTTPServer(c *conf.Server, cron *service.CronService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, cron *service.CronService, plan *service.PlanService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			validate.Validator(),
@@ -28,6 +29,7 @@ func NewHTTPServer(c *conf.Server, cron *service.CronService, logger log.Logger)
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	v1.RegisterCronHTTPServer(srv, cron)
+	cronv1.RegisterCronHTTPServer(srv, cron)
+	planv1.RegisterPlanHTTPServer(srv, plan)
 	return srv
 }

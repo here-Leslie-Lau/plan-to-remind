@@ -57,6 +57,43 @@ func (m *CreatePlanRequest) validate(all bool) error {
 
 	var errors []error
 
+	if _, ok := _CreatePlanRequest_State_InLookup[m.GetState()]; !ok {
+		err := CreatePlanRequestValidationError{
+			field:  "State",
+			reason: "value must be in list [1 2]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if val := m.GetLevel(); val < 1 || val > 8 {
+		err := CreatePlanRequestValidationError{
+			field:  "Level",
+			reason: "value must be inside range [1, 8]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for CronId
+
+	// no validation rules for DeadTime
+
+	if utf8.RuneCountInString(m.GetName()) < 1 {
+		err := CreatePlanRequestValidationError{
+			field:  "Name",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return CreatePlanRequestMultiError(errors)
 	}
@@ -136,6 +173,11 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreatePlanRequestValidationError{}
+
+var _CreatePlanRequest_State_InLookup = map[uint32]struct{}{
+	1: {},
+	2: {},
+}
 
 // Validate checks the field values on UpdatePlanRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the

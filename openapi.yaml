@@ -87,6 +87,21 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /api/v1/plan/create:
+        post:
+            tags:
+                - Plan
+            operationId: Plan_CreatePlan
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreatePlanRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /api/v1/plan/get:
         post:
             tags:
@@ -113,6 +128,26 @@ components:
                 desc:
                     type: string
                 expression:
+                    type: string
+        CreatePlanRequest:
+            type: object
+            properties:
+                state:
+                    type: integer
+                    description: 计划开关状态
+                    format: uint32
+                level:
+                    type: integer
+                    description: 计划等级
+                    format: uint32
+                cronId:
+                    type: integer
+                    description: 计划时间表ID
+                    format: uint64
+                deadTime:
+                    type: string
+                    description: 失效时间 example:(2006-01-02 15::04:05)
+                name:
                     type: string
         CronData:
             type: object

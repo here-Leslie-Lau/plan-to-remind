@@ -39,6 +39,14 @@ type PlanUsecase struct {
 	repo PlanRepo
 }
 
+func NewPlanUsecase(repo PlanRepo) *PlanUsecase {
+	return &PlanUsecase{repo: repo}
+}
+
 func (uc *PlanUsecase) GetPlanByID(ctx context.Context, id uint64) (*Plan, error) {
 	return uc.repo.GetPlan(ctx, id)
+}
+
+func (uc *PlanUsecase) CreatePlan(ctx context.Context, plan *Plan) error {
+	return uc.repo.CreatePlan(ctx, plan)
 }

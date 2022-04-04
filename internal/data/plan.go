@@ -14,7 +14,14 @@ type PlanRepo struct {
 }
 
 func (p *PlanRepo) CreatePlan(ctx context.Context, plan *biz.Plan) error {
-	panic("implement me")
+	result := &model.Plan{
+		State:    plan.State,
+		Level:    plan.Level,
+		CronID:   plan.CronId,
+		DeadTime: plan.DeadTime,
+		Name:     plan.Name,
+	}
+	return p.data.WithCtx(ctx).Model(&model.Plan{}).Create(result).Error
 }
 
 func (p *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
@@ -26,7 +33,7 @@ func (p *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
 		ID:       uint64(plan.ID),
 		State:    plan.State,
 		Level:    plan.Level,
-		CronId:   plan.DescId,
+		CronId:   plan.CronID,
 		DeadTime: plan.DeadTime,
 		Name:     plan.Name,
 	}
@@ -48,6 +55,6 @@ func (p *PlanRepo) ListPlanByFilter(ctx context.Context, f *biz.PlanFilter) ([]*
 	panic("implement me")
 }
 
-func NewPlanRepo(data *Data) *PlanRepo {
+func NewPlanRepo(data *Data) biz.PlanRepo {
 	return &PlanRepo{data: data}
 }
