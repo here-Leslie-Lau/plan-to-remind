@@ -201,6 +201,27 @@ func (m *UpdatePlanRequest) validate(all bool) error {
 
 	var errors []error
 
+	if m.GetId() <= 0 {
+		err := UpdatePlanRequestValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for State
+
+	// no validation rules for Level
+
+	// no validation rules for CronId
+
+	// no validation rules for DeadTime
+
+	// no validation rules for Name
+
 	if len(errors) > 0 {
 		return UpdatePlanRequestMultiError(errors)
 	}
@@ -280,106 +301,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UpdatePlanRequestValidationError{}
-
-// Validate checks the field values on UpdatePlanReply with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *UpdatePlanReply) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdatePlanReply with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdatePlanReplyMultiError, or nil if none found.
-func (m *UpdatePlanReply) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdatePlanReply) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return UpdatePlanReplyMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdatePlanReplyMultiError is an error wrapping multiple validation errors
-// returned by UpdatePlanReply.ValidateAll() if the designated constraints
-// aren't met.
-type UpdatePlanReplyMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdatePlanReplyMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdatePlanReplyMultiError) AllErrors() []error { return m }
-
-// UpdatePlanReplyValidationError is the validation error returned by
-// UpdatePlanReply.Validate if the designated constraints aren't met.
-type UpdatePlanReplyValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdatePlanReplyValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdatePlanReplyValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdatePlanReplyValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdatePlanReplyValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdatePlanReplyValidationError) ErrorName() string { return "UpdatePlanReplyValidationError" }
-
-// Error satisfies the builtin error interface
-func (e UpdatePlanReplyValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdatePlanReply.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdatePlanReplyValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdatePlanReplyValidationError{}
 
 // Validate checks the field values on DeletePlanRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the

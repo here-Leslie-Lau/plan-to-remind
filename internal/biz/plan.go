@@ -1,6 +1,8 @@
 package biz
 
-import "context"
+import (
+	"context"
+)
 
 // Plan 计划表
 type Plan struct {
@@ -49,4 +51,24 @@ func (uc *PlanUsecase) GetPlanByID(ctx context.Context, id uint64) (*Plan, error
 
 func (uc *PlanUsecase) CreatePlan(ctx context.Context, plan *Plan) error {
 	return uc.repo.CreatePlan(ctx, plan)
+}
+
+func (uc *PlanUsecase) UpdatePlan(ctx context.Context, plan *Plan) error {
+	param := make(map[string]interface{})
+	if plan.State > 0 {
+		param["state"] = plan.State
+	}
+	if plan.Level > 0 {
+		param["level"] = plan.Level
+	}
+	if plan.CronId > 0 {
+		param["cron_id"] = plan.CronId
+	}
+	if plan.DeadTime > 0 {
+		param["dead_time"] = plan.DeadTime
+	}
+	if plan.Name != "" {
+		param["name"] = plan.Name
+	}
+	return uc.repo.UpdatePlan(ctx, plan.ID, param)
 }

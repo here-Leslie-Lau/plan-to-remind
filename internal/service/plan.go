@@ -41,8 +41,20 @@ func (s *PlanService) CreatePlan(ctx context.Context, req *v1.CreatePlanRequest)
 	}
 	return &emptypb.Empty{}, nil
 }
-func (s *PlanService) UpdatePlan(ctx context.Context, req *v1.UpdatePlanRequest) (*v1.UpdatePlanReply, error) {
-	return &v1.UpdatePlanReply{}, nil
+func (s *PlanService) UpdatePlan(ctx context.Context, req *v1.UpdatePlanRequest) (*emptypb.Empty, error) {
+	plan := &biz.Plan{
+		ID:       req.Id,
+		State:    uint8(req.State),
+		Level:    uint8(req.Level),
+		CronId:   req.CronId,
+		DeadTime: req.DeadTime,
+		Name:     req.Name,
+	}
+	if err := s.uc.UpdatePlan(ctx, plan); err != nil {
+		s.log.Errorw("UpdatePlan biz UpdatePlan error", "req:", req, "err:", err)
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 func (s *PlanService) DeletePlan(ctx context.Context, req *v1.DeletePlanRequest) (*v1.DeletePlanReply, error) {
 	return &v1.DeletePlanReply{}, nil

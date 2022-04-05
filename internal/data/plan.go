@@ -48,7 +48,7 @@ func (p *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
 }
 
 func (p *PlanRepo) UpdatePlan(ctx context.Context, id uint64, param map[string]interface{}) error {
-	panic("implement me")
+	return p.data.WithCtx(ctx).Model(&model.Plan{}).Where("id = ?", id).Updates(param).Error
 }
 
 func (p *PlanRepo) ListPlanByFilter(ctx context.Context, f *biz.PlanFilter) ([]*biz.Plan, error) {

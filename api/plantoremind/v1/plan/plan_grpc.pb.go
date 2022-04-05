@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PlanClient interface {
 	CreatePlan(ctx context.Context, in *CreatePlanRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	UpdatePlan(ctx context.Context, in *UpdatePlanRequest, opts ...grpc.CallOption) (*UpdatePlanReply, error)
+	UpdatePlan(ctx context.Context, in *UpdatePlanRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeletePlan(ctx context.Context, in *DeletePlanRequest, opts ...grpc.CallOption) (*DeletePlanReply, error)
 	GetPlan(ctx context.Context, in *GetPlanRequest, opts ...grpc.CallOption) (*GetPlanReply, error)
 	ListPlan(ctx context.Context, in *ListPlanRequest, opts ...grpc.CallOption) (*ListPlanReply, error)
@@ -47,8 +47,8 @@ func (c *planClient) CreatePlan(ctx context.Context, in *CreatePlanRequest, opts
 	return out, nil
 }
 
-func (c *planClient) UpdatePlan(ctx context.Context, in *UpdatePlanRequest, opts ...grpc.CallOption) (*UpdatePlanReply, error) {
-	out := new(UpdatePlanReply)
+func (c *planClient) UpdatePlan(ctx context.Context, in *UpdatePlanRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.plantoremind.v1.plan.Plan/UpdatePlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (c *planClient) ListPlan(ctx context.Context, in *ListPlanRequest, opts ...
 // for forward compatibility
 type PlanServer interface {
 	CreatePlan(context.Context, *CreatePlanRequest) (*emptypb.Empty, error)
-	UpdatePlan(context.Context, *UpdatePlanRequest) (*UpdatePlanReply, error)
+	UpdatePlan(context.Context, *UpdatePlanRequest) (*emptypb.Empty, error)
 	DeletePlan(context.Context, *DeletePlanRequest) (*DeletePlanReply, error)
 	GetPlan(context.Context, *GetPlanRequest) (*GetPlanReply, error)
 	ListPlan(context.Context, *ListPlanRequest) (*ListPlanReply, error)
@@ -102,7 +102,7 @@ type UnimplementedPlanServer struct {
 func (UnimplementedPlanServer) CreatePlan(context.Context, *CreatePlanRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePlan not implemented")
 }
-func (UnimplementedPlanServer) UpdatePlan(context.Context, *UpdatePlanRequest) (*UpdatePlanReply, error) {
+func (UnimplementedPlanServer) UpdatePlan(context.Context, *UpdatePlanRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePlan not implemented")
 }
 func (UnimplementedPlanServer) DeletePlan(context.Context, *DeletePlanRequest) (*DeletePlanReply, error) {
