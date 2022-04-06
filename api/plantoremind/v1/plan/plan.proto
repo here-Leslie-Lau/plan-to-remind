@@ -34,7 +34,12 @@ service Plan {
       body: "*"
     };
   };
-  rpc ListPlan (ListPlanRequest) returns (ListPlanReply);
+  rpc ListPlan (ListPlanRequest) returns (ListPlanReply) {
+    option (google.api.http) = {
+      post: "/api/v1/plan/list"
+      body: "*"
+    };
+  };
 }
 
 message CreatePlanRequest {
@@ -90,5 +95,17 @@ message GetPlanReply {
   PlanData plan = 1;
 }
 
-message ListPlanRequest {}
-message ListPlanReply {}
+message ListPlanRequest {
+  // 偏移量
+  int64 offset = 1;
+  // 每页多少条
+  int64 limit = 2;
+  // 排序
+  string order_by = 3;
+  // 计划失效范围查询
+  string dead_time_begin = 4;
+  string dead_time_end = 5;
+}
+message ListPlanReply {
+  repeated PlanData list = 1;
+}

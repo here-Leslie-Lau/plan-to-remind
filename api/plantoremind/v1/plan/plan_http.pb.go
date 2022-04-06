@@ -22,6 +22,7 @@ type PlanHTTPServer interface {
 	CreatePlan(context.Context, *CreatePlanRequest) (*emptypb.Empty, error)
 	DeletePlan(context.Context, *DeletePlanRequest) (*emptypb.Empty, error)
 	GetPlan(context.Context, *GetPlanRequest) (*GetPlanReply, error)
+	ListPlan(context.Context, *ListPlanRequest) (*ListPlanReply, error)
 	UpdatePlan(context.Context, *UpdatePlanRequest) (*emptypb.Empty, error)
 }
 
@@ -31,6 +32,7 @@ func RegisterPlanHTTPServer(s *http.Server, srv PlanHTTPServer) {
 	r.POST("/api/v1/plan/update", _Plan_UpdatePlan0_HTTP_Handler(srv))
 	r.POST("/api/v1/plan/delete", _Plan_DeletePlan0_HTTP_Handler(srv))
 	r.POST("/api/v1/plan/get", _Plan_GetPlan0_HTTP_Handler(srv))
+	r.POST("/api/v1/plan/list", _Plan_ListPlan0_HTTP_Handler(srv))
 }
 
 func _Plan_CreatePlan0_HTTP_Handler(srv PlanHTTPServer) func(ctx http.Context) error {
@@ -109,10 +111,30 @@ func _Plan_GetPlan0_HTTP_Handler(srv PlanHTTPServer) func(ctx http.Context) erro
 	}
 }
 
+func _Plan_ListPlan0_HTTP_Handler(srv PlanHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListPlanRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/api.plantoremind.v1.plan.Plan/ListPlan")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListPlan(ctx, req.(*ListPlanRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListPlanReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type PlanHTTPClient interface {
 	CreatePlan(ctx context.Context, req *CreatePlanRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeletePlan(ctx context.Context, req *DeletePlanRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetPlan(ctx context.Context, req *GetPlanRequest, opts ...http.CallOption) (rsp *GetPlanReply, err error)
+	ListPlan(ctx context.Context, req *ListPlanRequest, opts ...http.CallOption) (rsp *ListPlanReply, err error)
 	UpdatePlan(ctx context.Context, req *UpdatePlanRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
@@ -155,6 +177,19 @@ func (c *PlanHTTPClientImpl) GetPlan(ctx context.Context, in *GetPlanRequest, op
 	pattern := "/api/v1/plan/get"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation("/api.plantoremind.v1.plan.Plan/GetPlan"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *PlanHTTPClientImpl) ListPlan(ctx context.Context, in *ListPlanRequest, opts ...http.CallOption) (*ListPlanReply, error) {
+	var out ListPlanReply
+	pattern := "/api/v1/plan/list"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation("/api.plantoremind.v1.plan.Plan/ListPlan"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

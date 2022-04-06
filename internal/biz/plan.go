@@ -26,9 +26,8 @@ type PlanFilter struct {
 	DeadTimeBegin int64
 	DeadTimeEnd   int64
 	// 分页
-	Offset, Limit         int64
-	TotalCount, TotalPage int64
-	OrderBy               string
+	Offset, Limit int64
+	OrderBy       string
 }
 
 type PlanRepo interface {
@@ -79,4 +78,8 @@ func (uc *PlanUsecase) DeletePlan(ctx context.Context, id uint64) error {
 		"deleted_at": time.Now(),
 	}
 	return uc.repo.UpdatePlan(ctx, id, param)
+}
+
+func (uc *PlanUsecase) ListPlanByFilter(ctx context.Context, f *PlanFilter) ([]*Plan, error) {
+	return uc.repo.ListPlanByFilter(ctx, f)
 }

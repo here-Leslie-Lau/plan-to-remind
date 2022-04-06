@@ -89,5 +89,44 @@ func (s *PlanService) GetPlan(ctx context.Context, req *v1.GetPlanRequest) (*v1.
 	}}, nil
 }
 func (s *PlanService) ListPlan(ctx context.Context, req *v1.ListPlanRequest) (*v1.ListPlanReply, error) {
-	return &v1.ListPlanReply{}, nil
+	f := &biz.PlanFilter{
+		Offset:  req.Offset,
+		Limit:   req.Limit,
+		OrderBy: req.OrderBy,
+	}
+	if req.DeadTimeBegin != "" {
+		begin, err := time.Parse(format.DateLayout, req.DeadTimeBegin)
+		if err != nil {
+			s.log.Warnw("ListPlan time parse dead_time_begin error", "begin:", req.DeadTimeBegin, "err:", err)
+			return nil, err
+		}
+		f.DeadTimeBegin = begin.Unix()
+	}
+	if req.DeadTimeBegin != "" {
+		end, err := time.Parse(format.DateLayout, req.DeadTimeEnd)
+		if err != nil {
+			s.log.Warnw("ListPlan time parse dead_time_end error", "begin:", req.DeadTimeBegin, "err:", err)
+			return nil, err
+		}
+		f.DeadTimeEnd = end.Unix()
+	}
+	plans, err := s.uc.ListPlanByFilter(ctx, f)
+	if err != nil {
+		s.log.Warnw("ListPlan ListPlanByFilter error", "req:", req, "err:", err)
+		return nil, err
+	}
+
+	var list []*v1.PlanData
+	for _, plan := range plans {
+		list = append(list, &v1.PlanData{
+			Id:       plan.ID,
+			State:    uint32(plan.State),
+			Level:    uint32(plan.Level),
+			CronId:   plan.CronId,
+			DeadTime: plan.DeadTime,
+			Name:     plan.Name,
+			CronDesc: plan.CronDesc,
+		})
+	}
+	return &v1.ListPlanReply{List: list}, nil
 }

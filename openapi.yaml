@@ -1,5 +1,5 @@
 # Generated with protoc-gen-openapi
-# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
 
 openapi: 3.0.3
 info:
@@ -135,6 +135,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetPlanReply'
+    /api/v1/plan/list:
+        post:
+            tags:
+                - Plan
+            operationId: Plan_ListPlan
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListPlanRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListPlanReply'
     /api/v1/plan/update:
         post:
             tags:
@@ -246,6 +264,32 @@ components:
                 orderBy:
                     type: string
                     description: 排序
+        ListPlanReply:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PlanData'
+        ListPlanRequest:
+            type: object
+            properties:
+                offset:
+                    type: integer
+                    description: 偏移量
+                    format: int64
+                limit:
+                    type: integer
+                    description: 每页多少条
+                    format: int64
+                orderBy:
+                    type: string
+                    description: 排序
+                deadTimeBegin:
+                    type: string
+                    description: 计划失效范围查询
+                deadTimeEnd:
+                    type: string
         PlanData:
             type: object
             properties:
