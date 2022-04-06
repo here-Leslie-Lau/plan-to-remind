@@ -16,7 +16,12 @@ service Plan {
       body: "*"
     };
   };
-  rpc UpdatePlan (UpdatePlanRequest) returns (google.protobuf.Empty);
+  rpc UpdatePlan (UpdatePlanRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/plan/update"
+      body: "*"
+    };
+  };
   rpc DeletePlan (DeletePlanRequest) returns (DeletePlanReply);
   rpc GetPlan (GetPlanRequest) returns (GetPlanReply) {
     option (google.api.http) = {
@@ -47,8 +52,8 @@ message UpdatePlanRequest {
   uint32 level = 3;
   // 计划时间表ID
   uint64 cron_id = 4;
-  // 计划失效时间
-  int64 dead_time = 5;
+  // 计划失效时间 format:2006-01-02
+  string dead_time = 5;
   // 计划名称
   string name = 6;
 }

@@ -47,9 +47,18 @@ func (s *PlanService) UpdatePlan(ctx context.Context, req *v1.UpdatePlanRequest)
 		State:    uint8(req.State),
 		Level:    uint8(req.Level),
 		CronId:   req.CronId,
-		DeadTime: req.DeadTime,
 		Name:     req.Name,
 	}
+
+	if req.DeadTime != "" {
+		deadTime, err := time.Parse(req.DeadTime, format.DateLayout)
+		if err != nil {
+			s.log.Warnw("UpdatePlan time parse dead_time error", "dead_time:", req.DeadTime, "err:", err)
+			return nil, err
+		}
+		plan.DeadTime = deadTime.Unix()
+	}
+
 	if err := s.uc.UpdatePlan(ctx, plan); err != nil {
 		s.log.Errorw("UpdatePlan biz UpdatePlan error", "req:", req, "err:", err)
 		return nil, err
