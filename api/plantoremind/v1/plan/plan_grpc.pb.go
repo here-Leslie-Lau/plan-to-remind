@@ -25,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type PlanClient interface {
 	CreatePlan(ctx context.Context, in *CreatePlanRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdatePlan(ctx context.Context, in *UpdatePlanRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	DeletePlan(ctx context.Context, in *DeletePlanRequest, opts ...grpc.CallOption) (*DeletePlanReply, error)
+	DeletePlan(ctx context.Context, in *DeletePlanRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetPlan(ctx context.Context, in *GetPlanRequest, opts ...grpc.CallOption) (*GetPlanReply, error)
 	ListPlan(ctx context.Context, in *ListPlanRequest, opts ...grpc.CallOption) (*ListPlanReply, error)
 }
@@ -56,8 +56,8 @@ func (c *planClient) UpdatePlan(ctx context.Context, in *UpdatePlanRequest, opts
 	return out, nil
 }
 
-func (c *planClient) DeletePlan(ctx context.Context, in *DeletePlanRequest, opts ...grpc.CallOption) (*DeletePlanReply, error) {
-	out := new(DeletePlanReply)
+func (c *planClient) DeletePlan(ctx context.Context, in *DeletePlanRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.plantoremind.v1.plan.Plan/DeletePlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (c *planClient) ListPlan(ctx context.Context, in *ListPlanRequest, opts ...
 type PlanServer interface {
 	CreatePlan(context.Context, *CreatePlanRequest) (*emptypb.Empty, error)
 	UpdatePlan(context.Context, *UpdatePlanRequest) (*emptypb.Empty, error)
-	DeletePlan(context.Context, *DeletePlanRequest) (*DeletePlanReply, error)
+	DeletePlan(context.Context, *DeletePlanRequest) (*emptypb.Empty, error)
 	GetPlan(context.Context, *GetPlanRequest) (*GetPlanReply, error)
 	ListPlan(context.Context, *ListPlanRequest) (*ListPlanReply, error)
 	mustEmbedUnimplementedPlanServer()
@@ -105,7 +105,7 @@ func (UnimplementedPlanServer) CreatePlan(context.Context, *CreatePlanRequest) (
 func (UnimplementedPlanServer) UpdatePlan(context.Context, *UpdatePlanRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePlan not implemented")
 }
-func (UnimplementedPlanServer) DeletePlan(context.Context, *DeletePlanRequest) (*DeletePlanReply, error) {
+func (UnimplementedPlanServer) DeletePlan(context.Context, *DeletePlanRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePlan not implemented")
 }
 func (UnimplementedPlanServer) GetPlan(context.Context, *GetPlanRequest) (*GetPlanReply, error) {

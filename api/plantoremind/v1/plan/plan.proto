@@ -22,7 +22,12 @@ service Plan {
       body: "*"
     };
   };
-  rpc DeletePlan (DeletePlanRequest) returns (DeletePlanReply);
+  rpc DeletePlan (DeletePlanRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/plan/delete"
+      body: "*"
+    };
+  };
   rpc GetPlan (GetPlanRequest) returns (GetPlanReply) {
     option (google.api.http) = {
       post: "/api/v1/plan/get"
@@ -58,8 +63,9 @@ message UpdatePlanRequest {
   string name = 6;
 }
 
-message DeletePlanRequest {}
-message DeletePlanReply {}
+message DeletePlanRequest {
+  uint64 id = 1 [(validate.rules).uint64.gt = 0];
+}
 
 message PlanData {
   uint64 id = 1;

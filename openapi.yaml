@@ -102,6 +102,21 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /api/v1/plan/delete:
+        post:
+            tags:
+                - Plan
+            operationId: Plan_DeletePlan
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeletePlanRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /api/v1/plan/get:
         post:
             tags:
@@ -177,6 +192,12 @@ components:
                     type: string
                     description: cron表达式
         DeleteCronRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint64
+        DeletePlanRequest:
             type: object
             properties:
                 id:

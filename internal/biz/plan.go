@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"time"
 )
 
 // Plan 计划表
@@ -71,4 +72,11 @@ func (uc *PlanUsecase) UpdatePlan(ctx context.Context, plan *Plan) error {
 		param["name"] = plan.Name
 	}
 	return uc.repo.UpdatePlan(ctx, plan.ID, param)
+}
+
+func (uc *PlanUsecase) DeletePlan(ctx context.Context, id uint64) error {
+	param := map[string]interface{}{
+		"deleted_at": time.Now(),
+	}
+	return uc.repo.UpdatePlan(ctx, id, param)
 }

@@ -324,6 +324,17 @@ func (m *DeletePlanRequest) validate(all bool) error {
 
 	var errors []error
 
+	if m.GetId() <= 0 {
+		err := DeletePlanRequestValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return DeletePlanRequestMultiError(errors)
 	}
@@ -403,106 +414,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeletePlanRequestValidationError{}
-
-// Validate checks the field values on DeletePlanReply with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *DeletePlanReply) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on DeletePlanReply with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// DeletePlanReplyMultiError, or nil if none found.
-func (m *DeletePlanReply) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *DeletePlanReply) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return DeletePlanReplyMultiError(errors)
-	}
-
-	return nil
-}
-
-// DeletePlanReplyMultiError is an error wrapping multiple validation errors
-// returned by DeletePlanReply.ValidateAll() if the designated constraints
-// aren't met.
-type DeletePlanReplyMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DeletePlanReplyMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DeletePlanReplyMultiError) AllErrors() []error { return m }
-
-// DeletePlanReplyValidationError is the validation error returned by
-// DeletePlanReply.Validate if the designated constraints aren't met.
-type DeletePlanReplyValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e DeletePlanReplyValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e DeletePlanReplyValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e DeletePlanReplyValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e DeletePlanReplyValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e DeletePlanReplyValidationError) ErrorName() string { return "DeletePlanReplyValidationError" }
-
-// Error satisfies the builtin error interface
-func (e DeletePlanReplyValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sDeletePlanReply.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = DeletePlanReplyValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = DeletePlanReplyValidationError{}
 
 // Validate checks the field values on PlanData with the rules defined in the
 // proto definition for this message. If any rules are violated, the first

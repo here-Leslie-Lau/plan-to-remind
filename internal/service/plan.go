@@ -43,11 +43,11 @@ func (s *PlanService) CreatePlan(ctx context.Context, req *v1.CreatePlanRequest)
 }
 func (s *PlanService) UpdatePlan(ctx context.Context, req *v1.UpdatePlanRequest) (*emptypb.Empty, error) {
 	plan := &biz.Plan{
-		ID:       req.Id,
-		State:    uint8(req.State),
-		Level:    uint8(req.Level),
-		CronId:   req.CronId,
-		Name:     req.Name,
+		ID:     req.Id,
+		State:  uint8(req.State),
+		Level:  uint8(req.Level),
+		CronId: req.CronId,
+		Name:   req.Name,
 	}
 
 	if req.DeadTime != "" {
@@ -65,8 +65,12 @@ func (s *PlanService) UpdatePlan(ctx context.Context, req *v1.UpdatePlanRequest)
 	}
 	return &emptypb.Empty{}, nil
 }
-func (s *PlanService) DeletePlan(ctx context.Context, req *v1.DeletePlanRequest) (*v1.DeletePlanReply, error) {
-	return &v1.DeletePlanReply{}, nil
+func (s *PlanService) DeletePlan(ctx context.Context, req *v1.DeletePlanRequest) (*emptypb.Empty, error) {
+	if err := s.uc.DeletePlan(ctx, req.Id); err != nil {
+		s.log.Errorw("DeletePlan biz.DeletePlan error", "plan_id:", req.Id, "err:", err)
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 func (s *PlanService) GetPlan(ctx context.Context, req *v1.GetPlanRequest) (*v1.GetPlanReply, error) {
 	plan, err := s.uc.GetPlanByID(ctx, req.Id)
