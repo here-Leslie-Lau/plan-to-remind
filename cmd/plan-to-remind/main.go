@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"os"
+	"plan-to-remind/internal/biz"
+	"plan-to-remind/internal/data"
 
-	"plan-to-remind/internal/conf"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"plan-to-remind/internal/conf"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -81,4 +83,9 @@ func main() {
 	if err := app.Run(); err != nil {
 		panic(err)
 	}
+}
+
+func initRepo(dataModel *data.Data) {
+	cronRepo := data.NewCronSpecRepo(dataModel)
+	biz.NewCronSpecRepo(cronRepo)
 }

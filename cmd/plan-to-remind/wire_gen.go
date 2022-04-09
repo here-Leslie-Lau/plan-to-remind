@@ -19,15 +19,14 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+	cronSpecUsecase := biz.NewCronSpecUsecase()
+	cronService := service.NewCronService(cronSpecUsecase, logger)
 	db, cleanup := data.NewGormDb(confData)
 	dataData, cleanup2, err := data.NewData(db)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	cronSpecRepo := data.NewCronSpecRepo(dataData)
-	cronSpecUsecase := biz.NewCronSpecUsecase(cronSpecRepo)
-	cronService := service.NewCronService(cronSpecUsecase, logger)
 	planRepo := data.NewPlanRepo(dataData)
 	planUsecase := biz.NewPlanUsecase(planRepo)
 	planService := service.NewPlanService(planUsecase, logger)

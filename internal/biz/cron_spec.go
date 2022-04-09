@@ -16,6 +16,13 @@ func NewCronSpec(ID uint64, desc string, expression string) *CronSpec {
 	return &CronSpec{ID: ID, Desc: desc, Expression: expression, repo: cronSpecRepo}
 }
 
+func NewDefaultCron(id uint64) *CronSpec {
+	return &CronSpec{
+		ID:   id,
+		repo: cronSpecRepo,
+	}
+}
+
 func (c *CronSpec) Get(ctx context.Context) (*CronSpec, error) {
 	return c.repo.GetCronSpec(ctx, c.ID)
 }
