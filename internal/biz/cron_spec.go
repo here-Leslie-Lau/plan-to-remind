@@ -9,12 +9,47 @@ type CronSpec struct {
 	ID         uint64 `json:"id"`
 	Desc       string `json:"desc"`
 	Expression string `json:"expression"`
+	repo       CronSpecRepo
+}
+
+func NewCronSpec(ID uint64, desc string, expression string) *CronSpec {
+	return &CronSpec{ID: ID, Desc: desc, Expression: expression, repo: cronSpecRepo}
+}
+
+func (c *CronSpec) Get(ctx context.Context) (*CronSpec, error) {
+	return c.repo.GetCronSpec(ctx, c.ID)
+}
+
+func (c *CronSpec) Update(ctx context.Context) error {
+	param := make(map[string]interface{}, 3)
+	if c.Desc != "" {
+		param["desc"] = c.Desc
+	}
+	if c.Expression != "" {
+		param["expression"] = c.Expression
+	}
+	return c.repo.UpdateCronSpec(ctx, c.ID, param)
+}
+
+func (c *CronSpec) Create(ctx context.Context) error {
+	return c.repo.SaveCronSpec(ctx, c)
+}
+
+func (c *CronSpec) Delete(ctx context.Context) error {
+	param := map[string]interface{}{
+		"deleted_at": time.Now(),
+	}
+	return c.repo.UpdateCronSpec(ctx, c.ID, param)
+}
+
+func (c *CronSpec) ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
+	return c.repo.ListCronSpec(ctx, f)
 }
 
 type CronSpecFilter struct {
-	OffSet     int64  `json:"off_set"`
-	Limit      int64  `json:"limit"`
-	OrderBy    string `json:"order_by"`
+	OffSet  int64  `json:"off_set"`
+	Limit   int64  `json:"limit"`
+	OrderBy string `json:"order_by"`
 }
 
 type CronSpecRepo interface {
@@ -24,40 +59,8 @@ type CronSpecRepo interface {
 	UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error
 }
 
-type CronSpecUsecase struct {
-	repo CronSpecRepo
-}
+var cronSpecRepo CronSpecRepo
 
-func NewCronSpecUsecase(repo CronSpecRepo) *CronSpecUsecase {
-	return &CronSpecUsecase{repo: repo}
-}
-
-func (uc *CronSpecUsecase) CreateCronSpec(ctx context.Context, cron *CronSpec) error {
-	return uc.repo.SaveCronSpec(ctx, cron)
-}
-
-func (uc *CronSpecUsecase) UpdateCronSpec(ctx context.Context, cron *CronSpec) error {
-	param := make(map[string]interface{}, 3)
-	if cron.Desc != "" {
-		param["desc"] = cron.Desc
-	}
-	if cron.Expression != "" {
-		param["expression"] = cron.Expression
-	}
-	return uc.repo.UpdateCronSpec(ctx, cron.ID, param)
-}
-
-func (uc *CronSpecUsecase) GetCronSpec(ctx context.Context, id uint64) (*CronSpec, error) {
-	return uc.repo.GetCronSpec(ctx, id)
-}
-
-func (uc *CronSpecUsecase) DeleteCronSpec(ctx context.Context, id uint64) error {
-	param := map[string]interface{}{
-		"deleted_at": time.Now(),
-	}
-	return uc.repo.UpdateCronSpec(ctx, id, param)
-}
-
-func (uc *CronSpecUsecase) ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
-	return uc.repo.ListCronSpec(ctx, f)
+func NewCronSpecRepo(repo CronSpecRepo) {
+	cronSpecRepo = repo
 }
