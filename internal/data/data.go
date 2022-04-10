@@ -3,12 +3,8 @@ package data
 import (
 	"context"
 	"fmt"
-	"github.com/google/wire"
 	"gorm.io/gorm"
 )
-
-// ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewGormDb, NewData, NewPlanRepo)
 
 // Data .
 type Data struct {

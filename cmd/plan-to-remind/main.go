@@ -2,10 +2,6 @@ package main
 
 import (
 	"flag"
-	"os"
-	"plan-to-remind/internal/biz"
-	"plan-to-remind/internal/data"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -13,7 +9,9 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"os"
 	"plan-to-remind/internal/conf"
+	"plan-to-remind/internal/data"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -73,6 +71,13 @@ func main() {
 		panic(err)
 	}
 
+	closeFuncs := initRepo(bc.Data)
+	defer func() {
+		for _, closeFunc := range closeFuncs {
+			closeFunc()
+		}
+	}()
+
 	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
 	if err != nil {
 		panic(err)
@@ -85,7 +90,13 @@ func main() {
 	}
 }
 
-func initRepo(dataModel *data.Data) {
-	cronRepo := data.NewCronSpecRepo(dataModel)
-	biz.NewCronSpecRepo(cronRepo)
+func initRepo(confData *conf.Data) []func() {
+	db, f := data.NewGormDb(confData)
+	dataModel, f2, err := data.NewData(db)
+	if err != nil {
+		panic(err)
+	}
+	data.NewCronSpecRepo(dataModel)
+	data.NewPlanRepo(dataModel)
+	return []func(){f, f2}
 }

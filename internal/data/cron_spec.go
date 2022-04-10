@@ -53,7 +53,7 @@ func (c *cronSpecRepo) ListCronSpec(ctx context.Context, f *biz.CronSpecFilter) 
 func limitCronSpecByFilter(f *biz.CronSpecFilter) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if f.OffSet > 0 && f.Limit > 0 {
-			db = db.Offset(int(f.OffSet-1)).Limit(int(f.Limit))
+			db = db.Offset(int(f.OffSet - 1)).Limit(int(f.Limit))
 		}
 		return db
 	}
@@ -63,6 +63,6 @@ func (c *cronSpecRepo) UpdateCronSpec(ctx context.Context, id uint64, params map
 	return c.data.WithCtx(ctx).Model(&model.CronSpec{}).Where("id = ?", id).Updates(params).Error
 }
 
-func NewCronSpecRepo(data *Data) biz.CronSpecRepo {
-	return &cronSpecRepo{data: data}
+func NewCronSpecRepo(data *Data) {
+	biz.RepoCron = &cronSpecRepo{data: data}
 }

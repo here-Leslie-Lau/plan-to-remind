@@ -10,7 +10,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/biz"
 	"plan-to-remind/internal/conf"
-	"plan-to-remind/internal/data"
 	"plan-to-remind/internal/server"
 	"plan-to-remind/internal/service"
 )
@@ -18,23 +17,14 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, data *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	cronSpecUsecase := biz.NewCronSpecUsecase()
 	cronService := service.NewCronService(cronSpecUsecase, logger)
-	db, cleanup := data.NewGormDb(confData)
-	dataData, cleanup2, err := data.NewData(db)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	planRepo := data.NewPlanRepo(dataData)
-	planUsecase := biz.NewPlanUsecase(planRepo)
+	planUsecase := biz.NewPlanUsecase()
 	planService := service.NewPlanService(planUsecase, logger)
 	httpServer := server.NewHTTPServer(confServer, cronService, planService, logger)
 	grpcServer := server.NewGRPCServer(confServer, cronService, planService, logger)
 	app := newApp(logger, httpServer, grpcServer)
 	return app, func() {
-		cleanup2()
-		cleanup()
 	}, nil
 }

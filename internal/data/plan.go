@@ -104,6 +104,6 @@ func limitPlanByFilter(f *biz.PlanFilter) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func NewPlanRepo(data *Data) biz.PlanRepo {
-	return &PlanRepo{data: data}
+func NewPlanRepo(data *Data) {
+	biz.RepoPlan = &PlanRepo{data: data}
 }

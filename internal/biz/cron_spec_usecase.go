@@ -4,9 +4,7 @@ import (
 	"context"
 )
 
-type CronSpecUsecase struct {
-	cron *CronSpec
-}
+type CronSpecUsecase struct{}
 
 func NewCronSpecUsecase() *CronSpecUsecase {
 	return &CronSpecUsecase{}
@@ -32,5 +30,5 @@ func (uc *CronSpecUsecase) DeleteCronSpec(ctx context.Context, id uint64) error 
 
 func (uc *CronSpecUsecase) ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
 	cron := NewDefaultCron(0)
-	return cron.ListCronSpec(ctx, f)
+	return cron.List(ctx, f)
 }

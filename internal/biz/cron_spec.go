@@ -13,13 +13,13 @@ type CronSpec struct {
 }
 
 func NewCronSpec(ID uint64, desc string, expression string) *CronSpec {
-	return &CronSpec{ID: ID, Desc: desc, Expression: expression, repo: cronSpecRepo}
+	return &CronSpec{ID: ID, Desc: desc, Expression: expression, repo: RepoCron}
 }
 
 func NewDefaultCron(id uint64) *CronSpec {
 	return &CronSpec{
 		ID:   id,
-		repo: cronSpecRepo,
+		repo: RepoCron,
 	}
 }
 
@@ -49,7 +49,7 @@ func (c *CronSpec) Delete(ctx context.Context) error {
 	return c.repo.UpdateCronSpec(ctx, c.ID, param)
 }
 
-func (c *CronSpec) ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
+func (c *CronSpec) List(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
 	return c.repo.ListCronSpec(ctx, f)
 }
 
@@ -66,8 +66,4 @@ type CronSpecRepo interface {
 	UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error
 }
 
-var cronSpecRepo CronSpecRepo
-
-func NewCronSpecRepo(repo CronSpecRepo) {
-	cronSpecRepo = repo
-}
+var RepoCron CronSpecRepo

@@ -20,6 +20,18 @@ type Plan struct {
 	Name string `json:"name"`
 	// 计划时间表描述
 	CronDesc string `json:"cron_desc"`
+	repo     PlanRepo
+}
+
+func NewPlan(id uint64, state uint8, level uint8, cronId uint64, deadTime int64, name string, cronDesc string) *Plan {
+	return &Plan{ID: id, State: state, Level: level, CronId: cronId, DeadTime: deadTime, Name: name, CronDesc: cronDesc, repo: RepoPlan}
+}
+
+func NewDefaultPlan(id uint64) *Plan {
+	return &Plan{
+		ID:   id,
+		repo: RepoPlan,
+	}
 }
 
 type PlanFilter struct {
@@ -37,49 +49,43 @@ type PlanRepo interface {
 	ListPlanByFilter(ctx context.Context, f *PlanFilter) ([]*Plan, error)
 }
 
-type PlanUsecase struct {
-	repo PlanRepo
+var RepoPlan PlanRepo
+
+func (p *Plan) Get(ctx context.Context) (*Plan, error) {
+	return p.repo.GetPlan(ctx, p.ID)
 }
 
-func NewPlanUsecase(repo PlanRepo) *PlanUsecase {
-	return &PlanUsecase{repo: repo}
+func (p *Plan) Create(ctx context.Context) error {
+	return p.repo.CreatePlan(ctx, p)
 }
 
-func (uc *PlanUsecase) GetPlanByID(ctx context.Context, id uint64) (*Plan, error) {
-	return uc.repo.GetPlan(ctx, id)
-}
-
-func (uc *PlanUsecase) CreatePlan(ctx context.Context, plan *Plan) error {
-	return uc.repo.CreatePlan(ctx, plan)
-}
-
-func (uc *PlanUsecase) UpdatePlan(ctx context.Context, plan *Plan) error {
+func (p *Plan) Update(ctx context.Context) error {
 	param := make(map[string]interface{})
-	if plan.State > 0 {
-		param["state"] = plan.State
+	if p.State > 0 {
+		param["state"] = p.State
 	}
-	if plan.Level > 0 {
-		param["level"] = plan.Level
+	if p.Level > 0 {
+		param["level"] = p.Level
 	}
-	if plan.CronId > 0 {
-		param["cron_id"] = plan.CronId
+	if p.CronId > 0 {
+		param["cron_id"] = p.CronId
 	}
-	if plan.DeadTime > 0 {
-		param["dead_time"] = plan.DeadTime
+	if p.DeadTime > 0 {
+		param["dead_time"] = p.DeadTime
 	}
-	if plan.Name != "" {
-		param["name"] = plan.Name
+	if p.Name != "" {
+		param["name"] = p.Name
 	}
-	return uc.repo.UpdatePlan(ctx, plan.ID, param)
+	return p.repo.UpdatePlan(ctx, p.ID, param)
 }
 
-func (uc *PlanUsecase) DeletePlan(ctx context.Context, id uint64) error {
+func (p *Plan) Delete(ctx context.Context) error {
 	param := map[string]interface{}{
 		"deleted_at": time.Now(),
 	}
-	return uc.repo.UpdatePlan(ctx, id, param)
+	return p.repo.UpdatePlan(ctx, p.ID, param)
 }
 
-func (uc *PlanUsecase) ListPlanByFilter(ctx context.Context, f *PlanFilter) ([]*Plan, error) {
-	return uc.repo.ListPlanByFilter(ctx, f)
+func (p *Plan) List(ctx context.Context, f *PlanFilter) ([]*Plan, error) {
+	return p.repo.ListPlanByFilter(ctx, f)
 }
