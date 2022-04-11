@@ -28,13 +28,8 @@ func (s *PlanService) CreatePlan(ctx context.Context, req *v1.CreatePlanRequest)
 		s.log.Warnw("CreatePlan time parse error", "dead_time:", req.DeadTime, "err:", err)
 		return nil, err
 	}
-	err = s.uc.CreatePlan(ctx, &biz.Plan{
-		State:    uint8(req.State),
-		Level:    uint8(req.Level),
-		CronId:   req.CronId,
-		DeadTime: deadTime.Unix(),
-		Name:     req.Name,
-	})
+	plan := biz.NewPlan(0, uint8(req.State), uint8(req.Level), req.CronId, deadTime.Unix(), req.Name, "")
+	err = s.uc.CreatePlan(ctx, plan)
 	if err != nil {
 		s.log.Errorw("CreatePlan biz.CreatePlan err", "req:", req, "err:", err)
 		return nil, err
@@ -42,13 +37,7 @@ func (s *PlanService) CreatePlan(ctx context.Context, req *v1.CreatePlanRequest)
 	return &emptypb.Empty{}, nil
 }
 func (s *PlanService) UpdatePlan(ctx context.Context, req *v1.UpdatePlanRequest) (*emptypb.Empty, error) {
-	plan := &biz.Plan{
-		ID:     req.Id,
-		State:  uint8(req.State),
-		Level:  uint8(req.Level),
-		CronId: req.CronId,
-		Name:   req.Name,
-	}
+	plan := biz.NewPlan(req.Id, uint8(req.State), uint8(req.Level), req.CronId, 0, req.Name, "")
 
 	if req.DeadTime != "" {
 		deadTime, err := time.Parse(req.DeadTime, format.DateLayout)
@@ -102,7 +91,7 @@ func (s *PlanService) ListPlan(ctx context.Context, req *v1.ListPlanRequest) (*v
 		}
 		f.DeadTimeBegin = begin.Unix()
 	}
-	if req.DeadTimeBegin != "" {
+	if req.DeadTimeEnd != "" {
 		end, err := time.Parse(format.DateLayout, req.DeadTimeEnd)
 		if err != nil {
 			s.log.Warnw("ListPlan time parse dead_time_end error", "begin:", req.DeadTimeBegin, "err:", err)
