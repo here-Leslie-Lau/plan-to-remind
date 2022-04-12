@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	"time"
 )
 
 // Plan 计划表
@@ -43,47 +42,38 @@ type PlanFilter struct {
 }
 
 type PlanRepo interface {
-	CreatePlan(ctx context.Context, plan *Plan) error
+	SavePlan(ctx context.Context, plan *Plan) error
 	GetPlan(ctx context.Context, id uint64) (*Plan, error)
-	UpdatePlan(ctx context.Context, id uint64, param map[string]interface{}) error
+	DeletePlan(ctx context.Context, id uint64) error
 	ListPlanByFilter(ctx context.Context, f *PlanFilter) ([]*Plan, error)
 }
 
 var RepoPlan PlanRepo
 
 func (p *Plan) Get(ctx context.Context) (*Plan, error) {
-	return p.repo.GetPlan(ctx, p.ID)
+	plan, err := p.repo.GetPlan(ctx, p.ID)
+	if err != nil {
+		return nil, err
+	}
+	cron := NewDefaultCron(plan.CronId)
+	cron, err = cron.Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+	plan.CronDesc = cron.Desc
+	return plan, nil
 }
 
 func (p *Plan) Create(ctx context.Context) error {
-	return p.repo.CreatePlan(ctx, p)
+	return p.repo.SavePlan(ctx, p)
 }
 
 func (p *Plan) Update(ctx context.Context) error {
-	param := make(map[string]interface{})
-	if p.State > 0 {
-		param["state"] = p.State
-	}
-	if p.Level > 0 {
-		param["level"] = p.Level
-	}
-	if p.CronId > 0 {
-		param["cron_id"] = p.CronId
-	}
-	if p.DeadTime > 0 {
-		param["dead_time"] = p.DeadTime
-	}
-	if p.Name != "" {
-		param["name"] = p.Name
-	}
-	return p.repo.UpdatePlan(ctx, p.ID, param)
+	return p.repo.SavePlan(ctx, p)
 }
 
 func (p *Plan) Delete(ctx context.Context) error {
-	param := map[string]interface{}{
-		"deleted_at": time.Now(),
-	}
-	return p.repo.UpdatePlan(ctx, p.ID, param)
+	return p.repo.DeletePlan(ctx, p.ID)
 }
 
 func (p *Plan) List(ctx context.Context, f *PlanFilter) ([]*Plan, error) {

@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	"time"
 )
 
 type CronSpec struct {
@@ -36,10 +35,7 @@ func (c *CronSpec) Create(ctx context.Context) error {
 }
 
 func (c *CronSpec) Delete(ctx context.Context) error {
-	param := map[string]interface{}{
-		"deleted_at": time.Now(),
-	}
-	return c.repo.UpdateCronSpec(ctx, c.ID, param)
+	return c.repo.DeleteCronSpec(ctx, c.ID)
 }
 
 func (c *CronSpec) List(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error) {
@@ -56,7 +52,7 @@ type CronSpecRepo interface {
 	SaveCronSpec(ctx context.Context, cron *CronSpec) error
 	GetCronSpec(ctx context.Context, id uint64) (*CronSpec, error)
 	ListCronSpec(ctx context.Context, f *CronSpecFilter) ([]*CronSpec, error)
-	UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error
+	DeleteCronSpec(ctx context.Context, id uint64) error
 }
 
 var RepoCron CronSpecRepo

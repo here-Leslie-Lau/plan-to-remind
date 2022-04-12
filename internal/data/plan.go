@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"plan-to-remind/internal/biz"
 	"plan-to-remind/internal/data/model"
+	"time"
 )
 
 var _ biz.PlanRepo = (*PlanRepo)(nil)
@@ -14,17 +15,6 @@ const TableNamePlans = "plans"
 // PlanRepo biz.PlanRepo实现，计划表仓库
 type PlanRepo struct {
 	data *Data
-}
-
-func (p *PlanRepo) CreatePlan(ctx context.Context, plan *biz.Plan) error {
-	result := &model.Plan{
-		State:    plan.State,
-		Level:    plan.Level,
-		CronID:   plan.CronId,
-		DeadTime: plan.DeadTime,
-		Name:     plan.Name,
-	}
-	return p.data.WithCtx(ctx).Model(&model.Plan{}).Create(result).Error
 }
 
 func (p *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
@@ -40,18 +30,11 @@ func (p *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
 		DeadTime: plan.DeadTime,
 		Name:     plan.Name,
 	}
-	// query cron desc
-	var desc string
-	err := p.data.WithCtx(ctx).Model(&model.CronSpec{}).Select("desc").Where("id = ?", id).Scan(&desc).Error
-	if err != nil {
-		return nil, err
-	}
-	result.CronDesc = desc
 	return result, nil
 }
 
-func (p *PlanRepo) UpdatePlan(ctx context.Context, id uint64, param map[string]interface{}) error {
-	return p.data.WithCtx(ctx).Model(&model.Plan{}).Where("id = ?", id).Updates(param).Error
+func (p *PlanRepo) DeletePlan(ctx context.Context, id uint64) error {
+	return p.data.WithCtx(ctx).Model(&model.Plan{}).Where("id = ?", id).Update("deleted_at", time.Now()).Error
 }
 
 // planModel 联表查询用到的结构体
@@ -102,6 +85,23 @@ func limitPlanByFilter(f *biz.PlanFilter) func(db *gorm.DB) *gorm.DB {
 		}
 		return db
 	}
+}
+
+func (p *PlanRepo) SavePlan(ctx context.Context, plan *biz.Plan) error {
+	result := &model.Plan{
+		State:    plan.State,
+		Level:    plan.Level,
+		CronID:   plan.CronId,
+		DeadTime: plan.DeadTime,
+		Name:     plan.Name,
+	}
+	sql := p.data.WithCtx(ctx).Model(&model.Plan{})
+	if plan.ID != 0 {
+		// update
+		return sql.Where("id = ?", plan.ID).Updates(result).Error
+	}
+	// create
+	return sql.Create(result).Error
 }
 
 func NewPlanRepo(data *Data) {

@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"plan-to-remind/internal/biz"
 	"plan-to-remind/internal/data/model"
+	"time"
 )
 
 var _ biz.CronSpecRepo = (*cronSpecRepo)(nil)
@@ -51,8 +52,8 @@ func limitCronSpecByFilter(f *biz.CronSpecFilter) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func (c *cronSpecRepo) UpdateCronSpec(ctx context.Context, id uint64, params map[string]interface{}) error {
-	return c.data.WithCtx(ctx).Model(&model.CronSpec{}).Where("id = ?", id).Updates(params).Error
+func (c *cronSpecRepo) DeleteCronSpec(ctx context.Context, id uint64) error {
+	return c.data.WithCtx(ctx).Model(&model.CronSpec{}).Where("id = ?", id).Update("deleted_at", time.Now()).Error
 }
 
 func (c *cronSpecRepo) SaveCronSpec(ctx context.Context, cron *biz.CronSpec) error {
@@ -65,6 +66,7 @@ func (c *cronSpecRepo) SaveCronSpec(ctx context.Context, cron *biz.CronSpec) err
 		// update
 		return sql.Where("id = ?", cron.ID).Updates(result).Error
 	}
+	// create
 	return sql.Create(result).Error
 }
 
