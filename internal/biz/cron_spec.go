@@ -28,14 +28,7 @@ func (c *CronSpec) Get(ctx context.Context) (*CronSpec, error) {
 }
 
 func (c *CronSpec) Update(ctx context.Context) error {
-	param := make(map[string]interface{}, 3)
-	if c.Desc != "" {
-		param["desc"] = c.Desc
-	}
-	if c.Expression != "" {
-		param["expression"] = c.Expression
-	}
-	return c.repo.UpdateCronSpec(ctx, c.ID, param)
+	return c.repo.SaveCronSpec(ctx, c)
 }
 
 func (c *CronSpec) Create(ctx context.Context) error {
