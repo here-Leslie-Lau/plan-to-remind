@@ -12,6 +12,7 @@ import (
 	"os"
 	"plan-to-remind/internal/conf"
 	"plan-to-remind/internal/data"
+	"plan-to-remind/internal/server"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -30,7 +31,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server) *kratos.App {
+func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, cs *server.CronServer) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -40,6 +41,7 @@ func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server) *kratos.App {
 		kratos.Server(
 			hs,
 			gs,
+			cs,
 		),
 	)
 }
