@@ -11,6 +11,7 @@ import (
 type CronServer struct {
 	c   *cron.Cron
 	log *log.Helper
+	// todo timer service
 }
 
 func NewCronServer(data *conf.Data, logger log.Logger) *CronServer {

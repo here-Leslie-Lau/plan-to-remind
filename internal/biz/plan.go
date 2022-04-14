@@ -51,17 +51,7 @@ type PlanRepo interface {
 var RepoPlan PlanRepo
 
 func (p *Plan) Get(ctx context.Context) (*Plan, error) {
-	plan, err := p.repo.GetPlan(ctx, p.ID)
-	if err != nil {
-		return nil, err
-	}
-	cron := NewDefaultCron(plan.CronId)
-	cron, err = cron.Get(ctx)
-	if err != nil {
-		return nil, err
-	}
-	plan.CronDesc = cron.Desc
-	return plan, nil
+	return p.repo.GetPlan(ctx, p.ID)
 }
 
 func (p *Plan) Create(ctx context.Context) error {

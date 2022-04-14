@@ -12,7 +12,18 @@ func NewPlanUsecase() *PlanUsecase {
 
 func (uc *PlanUsecase) GetPlanByID(ctx context.Context, id uint64) (*Plan, error) {
 	plan := NewDefaultPlan(id)
-	return plan.Get(ctx)
+	plan, err := plan.Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// get cron by cron_id
+	cron := NewDefaultCron(plan.CronId)
+	cron, err = cron.Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+	plan.CronDesc = cron.Desc
+	return plan, nil
 }
 
 func (uc *PlanUsecase) CreatePlan(ctx context.Context, plan *Plan) error {
