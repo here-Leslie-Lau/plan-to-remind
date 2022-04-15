@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/apache/pulsar-client-go/pulsar"
 	"plan-to-remind/internal/conf"
 	"plan-to-remind/internal/data/model"
@@ -33,11 +34,23 @@ func NewTimerUsecase(data *conf.Data) *TimerUsecase {
 func (t *TimerUsecase) UserPlanPush(ctx context.Context) error {
 	// find all active plans
 	plan := NewDefaultPlan(0)
-	_, err := plan.List(ctx, &PlanFilter{State: model.PlanStateOn})
+	list, err := plan.List(ctx, &PlanFilter{State: model.PlanStateOn})
 	if err != nil {
 		return err
 	}
 	// push plan to delay queue
+	for _, p := range list {
+		bytes, err := json.Marshal(p)
+		if err != nil {
+			// todo log
+			continue
+		}
+		dur := t.parser.Parser(p.CronDesc)
+		if err := t.producer.DelayAfterSendMsg(ctx, bytes, dur); err != nil {
+			// todo log
+			continue
+		}
+	}
 	return nil
 }
 
