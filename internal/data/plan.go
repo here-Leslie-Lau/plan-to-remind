@@ -74,6 +74,9 @@ func (p *PlanRepo) ListPlanByFilter(ctx context.Context, f *biz.PlanFilter) ([]*
 
 func limitPlanByFilter(f *biz.PlanFilter) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
+		if f.State != 0 {
+			db = db.Where("state = ?", f.State)
+		}
 		if f.DeadTimeBegin > 0 {
 			db = db.Where("dead_time >= ?", f.DeadTimeBegin)
 		}

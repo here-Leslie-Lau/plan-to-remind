@@ -34,6 +34,7 @@ func NewDefaultPlan(id uint64) *Plan {
 }
 
 type PlanFilter struct {
+	State         uint8
 	DeadTimeBegin int64
 	DeadTimeEnd   int64
 	// 分页
