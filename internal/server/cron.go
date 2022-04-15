@@ -5,17 +5,18 @@ import (
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/robfig/cron/v3"
-	"plan-to-remind/internal/conf"
+	"plan-to-remind/internal/service"
 )
 
 type CronServer struct {
 	c   *cron.Cron
 	log *log.Helper
 	// todo timer service
+	svc *service.TimerService
 }
 
-func NewCronServer(data *conf.Data, logger log.Logger) *CronServer {
-	return &CronServer{c: cron.New(), log: log.NewHelper(logger)}
+func NewCronServer(svc *service.TimerService, logger log.Logger) *CronServer {
+	return &CronServer{c: cron.New(), log: log.NewHelper(logger), svc: svc}
 }
 
 func (c *CronServer) Start(context.Context) error {

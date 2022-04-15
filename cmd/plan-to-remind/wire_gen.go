@@ -25,7 +25,9 @@ func wireApp(confServer *conf.Server, data *conf.Data, logger log.Logger) (*krat
 	planService := service.NewPlanService(planUsecase, logger)
 	httpServer := server.NewHTTPServer(confServer, cronService, planService, logger)
 	grpcServer := server.NewGRPCServer(confServer, cronService, planService, logger)
-	cronServer := server.NewCronServer(data, logger)
+	timerUsecase := biz.NewTimerUsecase(data)
+	timerService := service.NewTimerService(logger, timerUsecase)
+	cronServer := server.NewCronServer(timerService, logger)
 	app := newApp(logger, httpServer, grpcServer, cronServer)
 	return app, func() {
 	}, nil
