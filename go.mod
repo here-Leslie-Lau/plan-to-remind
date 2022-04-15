@@ -3,6 +3,7 @@ module plan-to-remind
 go 1.16
 
 require (
+	github.com/apache/pulsar-client-go v0.8.1
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/go-kratos/kratos/v2 v2.2.1
 	github.com/google/wire v0.5.0
