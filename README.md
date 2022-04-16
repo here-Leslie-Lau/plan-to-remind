@@ -1,8 +1,14 @@
 # plan-to-remind
 
+## Project introduction
+
 just a tiny project to plan to remind
 
-version management
+项目初衷，仅仅是因为本人经常忘记一些要计划做好的事情，所以打算写一个计划推送服务，来提醒自己。虽然可以直接用手机的备忘录，但是还是秉承着程序员想自己"造轮子"的心理，所以还是打算开搞😃
+
+本项目采用bilili的`kratos`框架，再加上了自己对于DDD的理解，所以在它原本的示例项目中做了些改造。
+
+## version management
 
 - [x] v0.1: 时间表curd
 - [x] v0.2: 计划表curd
@@ -16,3 +22,7 @@ version management
 - v1.0: 每日计划完成度统计数据的生成
 - v1.1: 每日计划完成度查询，修改，删除
 - v1.2: 每日完成分析(数据分析，完成趋向等指标)
+
+## The technical architecture
+
+todo
