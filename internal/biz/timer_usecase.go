@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/apache/pulsar-client-go/pulsar"
+	"github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/conf"
 	"plan-to-remind/internal/data/model"
 	"plan-to-remind/internal/pkg/mq"
@@ -14,9 +15,10 @@ import (
 type TimerUsecase struct {
 	parser   *cronParser
 	producer mq.Producer
+	log      *log.Helper
 }
 
-func NewTimerUsecase(data *conf.Data) *TimerUsecase {
+func NewTimerUsecase(data *conf.Data, logger log.Logger) *TimerUsecase {
 	cli, err := pulsar.NewClient(pulsar.ClientOptions{
 		URL: data.Pulsar.Url,
 	})
@@ -27,7 +29,7 @@ func NewTimerUsecase(data *conf.Data) *TimerUsecase {
 	if err != nil {
 		panic(err)
 	}
-	return &TimerUsecase{parser: &cronParser{}, producer: producer}
+	return &TimerUsecase{parser: &cronParser{}, producer: producer, log: log.NewHelper(logger)}
 }
 
 // UserPlanPush 用户任务推送
@@ -42,12 +44,12 @@ func (t *TimerUsecase) UserPlanPush(ctx context.Context) error {
 	for _, p := range list {
 		bytes, err := json.Marshal(p)
 		if err != nil {
-			// todo log
+			t.log.Errorw("UserPlanPush json marshal fail, bytes:%s, err:%v", string(bytes), err)
 			continue
 		}
 		dur := t.parser.Parser(p.CronDesc)
 		if err := t.producer.DelayAfterSendMsg(ctx, bytes, dur); err != nil {
-			// todo log
+			t.log.Errorw("UserPlanPush DelayAfterSendMsg fail, bytes:%s, dur:%v, err:%v", string(bytes), dur, err)
 			continue
 		}
 	}
