@@ -9,6 +9,8 @@ import (
 	"plan-to-remind/internal/data/model"
 	"plan-to-remind/internal/pkg/mq"
 	producer2 "plan-to-remind/internal/pkg/mq/producer"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -58,6 +60,22 @@ func (t *TimerUsecase) UserPlanPush(ctx context.Context) error {
 
 type cronParser struct{}
 
+// Parser 简陋版时间解析器实现,仅仅扫描当日的,todo 后续迭代更多功能
 func (c *cronParser) Parser(expression string) time.Duration {
-	return 0
+	now := time.Now()
+	list := strings.Split(expression, " ")
+	if len(list) != 5 {
+		return 0
+	}
+
+	hour, err := strconv.ParseInt(list[1], 10, 64)
+	if err != nil {
+		return 0
+	}
+	min, err := strconv.ParseInt(list[0], 10, 64)
+	if err != nil {
+		return 0
+	}
+	dur := time.Date(now.Year(), now.Month(), now.Day(), int(hour), int(min), 0, 0, now.Location())
+	return dur.Sub(now)
 }
