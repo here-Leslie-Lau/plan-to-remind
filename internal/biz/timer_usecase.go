@@ -50,6 +50,10 @@ func (t *TimerUsecase) UserPlanPush(ctx context.Context) error {
 			continue
 		}
 		dur := t.parser.Parser(p.CronDesc)
+		if dur == 0 {
+			t.log.Debugw("UserPlanPush Parser cron_expression continue", "duration:", dur)
+			continue
+		}
 		if err := t.producer.DelayAfterSendMsg(ctx, bytes, dur); err != nil {
 			t.log.Errorw("UserPlanPush DelayAfterSendMsg fail, bytes:%s, dur:%v, err:%v", string(bytes), dur, err)
 			continue
@@ -65,6 +69,10 @@ func (c *cronParser) Parser(expression string) time.Duration {
 	now := time.Now()
 	list := strings.Split(expression, " ")
 	if len(list) != 5 {
+		return 0
+	}
+	// 仅仅扫描当日的
+	if list[2] != "*" && list[2] != strconv.FormatInt(int64(now.Day()), 10) {
 		return 0
 	}
 
