@@ -19,4 +19,4 @@ data:
     write_timeout: 0.2s
   pulsar:
     topic: plan_to_remind
-    url: pulsar://127.0.0.1
+    url: pulsar://127.0.0.1:6650

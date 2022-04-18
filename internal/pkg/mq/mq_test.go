@@ -15,6 +15,7 @@ func TestPulsar(t *testing.T) {
 		URL: "pulsar://127.0.0.1:6650",
 	})
 	if err != nil {
+		fmt.Println("err:", err)
 		t.Fail()
 		return
 	}
@@ -22,6 +23,7 @@ func TestPulsar(t *testing.T) {
 	// producer
 	pro, err := producer.NewPulsarProducer("demo", cli)
 	if err != nil || pro == nil {
+		fmt.Println("err:", err)
 		t.Fail()
 		return
 	}

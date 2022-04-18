@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/robfig/cron/v3"
 	"plan-to-remind/internal/service"
@@ -11,7 +10,6 @@ import (
 type CronServer struct {
 	c   *cron.Cron
 	log *log.Helper
-	// todo timer service
 	svc *service.TimerService
 }
 
@@ -43,12 +41,10 @@ type cronTab struct {
 
 func (c *CronServer) addFunc() {
 	list := []*cronTab{
-		&cronTab{
-			Name:       "demo",
-			Expression: "29 18 * * *",
-			F: func() {
-				fmt.Println("hello world!")
-			},
+		{
+			Name:       "扫描今日计划并推送",
+			Expression: "1 0 * * *",
+			F:          c.svc.UserPlanPush,
 		},
 	}
 	for _, tab := range list {
