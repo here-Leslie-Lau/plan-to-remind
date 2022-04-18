@@ -50,7 +50,7 @@ message CreatePlanRequest {
   // 计划时间表ID
   uint64 cron_id = 3;
   // 失效时间 example:(2006-01-02 15::04:05)
-  string dead_time = 4;
+  string dead_time = 4 [(validate.rules).string.min_len = 1];
   string name = 5 [(validate.rules).string.min_len = 1];
 }
 

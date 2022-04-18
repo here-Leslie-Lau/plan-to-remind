@@ -81,7 +81,16 @@ func (m *CreatePlanRequest) validate(all bool) error {
 
 	// no validation rules for CronId
 
-	// no validation rules for DeadTime
+	if utf8.RuneCountInString(m.GetDeadTime()) < 1 {
+		err := CreatePlanRequestValidationError{
+			field:  "DeadTime",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if utf8.RuneCountInString(m.GetName()) < 1 {
 		err := CreatePlanRequestValidationError{
