@@ -23,3 +23,12 @@ func (t *TimerService) UserPlanPush() {
 		t.log.Errorw("UserPlanPush usecase UserPlanPush error", "err:", err)
 	}
 }
+
+// PlanToInvalid 将计划失效
+func (t *TimerService) PlanToInvalid() {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := t.uc.PlanToInvalid(ctx); err != nil {
+		t.log.Errorw("PlanToInvalid usecase PlanToInvalid error", "time:", time.Now(), "err:", err)
+	}
+}

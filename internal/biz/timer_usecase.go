@@ -35,7 +35,7 @@ func NewTimerUsecase(data *conf.Data, logger log.Logger) *TimerUsecase {
 }
 
 // UserPlanPush 用户任务推送
-func (t *TimerUsecase) UserPlanPush(ctx context.Context) error {
+func (uc *TimerUsecase) UserPlanPush(ctx context.Context) error {
 	// find all active plans
 	plan := NewDefaultPlan(0)
 	list, err := plan.List(ctx, &PlanFilter{State: model.PlanStateOn})
@@ -46,16 +46,16 @@ func (t *TimerUsecase) UserPlanPush(ctx context.Context) error {
 	for _, p := range list {
 		bytes, err := json.Marshal(p)
 		if err != nil {
-			t.log.Errorw("UserPlanPush json marshal fail, bytes:%s, err:%v", string(bytes), err)
+			uc.log.Errorw("UserPlanPush json marshal fail, bytes:%s, err:%v", string(bytes), err)
 			continue
 		}
-		dur := t.parser.Parser(p.CronDesc)
+		dur := uc.parser.Parser(p.CronDesc)
 		if dur == 0 {
-			t.log.Debugw("UserPlanPush Parser cron_expression continue", "duration:", dur)
+			uc.log.Debugw("UserPlanPush Parser cron_expression continue", "duration:", dur)
 			continue
 		}
-		if err := t.producer.DelayAfterSendMsg(ctx, bytes, dur); err != nil {
-			t.log.Errorw("UserPlanPush DelayAfterSendMsg fail, bytes:%s, dur:%v, err:%v", string(bytes), dur, err)
+		if err := uc.producer.DelayAfterSendMsg(ctx, bytes, dur); err != nil {
+			uc.log.Errorw("UserPlanPush DelayAfterSendMsg fail, bytes:%s, dur:%v, err:%v", string(bytes), dur, err)
 			continue
 		}
 	}
@@ -86,4 +86,23 @@ func (c *cronParser) Parser(expression string) time.Duration {
 	}
 	dur := time.Date(now.Year(), now.Month(), now.Day(), int(hour), int(min), 0, 0, now.Location())
 	return dur.Sub(now)
+}
+
+func (uc *TimerUsecase) PlanToInvalid(ctx context.Context) error {
+	plan := NewDefaultPlan(0)
+	list, err := plan.List(ctx, &PlanFilter{
+		State:       model.PlanStateOn,
+		DeadTimeEnd: time.Now().Unix(),
+	})
+	if err != nil {
+		return err
+	}
+	for _, p := range list {
+		p.State = model.PlanStateOff
+		if err := p.Update(ctx); err != nil {
+			uc.log.Errorw("PlanToInvalid update plan error", "plan_id:", p.ID, "err:", err)
+			continue
+		}
+	}
+	return nil
 }

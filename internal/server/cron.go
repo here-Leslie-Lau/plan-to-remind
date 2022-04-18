@@ -46,6 +46,11 @@ func (c *CronServer) addFunc() {
 			Expression: "1 0 * * *",
 			F:          c.svc.UserPlanPush,
 		},
+		{
+			Name:       "每日扫描，将不符合的计划失效",
+			Expression: "0 0 * * *",
+			F:          c.svc.PlanToInvalid,
+		},
 	}
 	for _, tab := range list {
 		_, err := c.c.AddFunc(tab.Expression, tab.F)
