@@ -14,10 +14,11 @@ func (p *PulsarConsumer) Consume(ctx context.Context) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return msg.Payload(), err
+	return msg.Payload(), nil
 }
 
 func (p *PulsarConsumer) CloseFunc() {
+	_ = p.con.Unsubscribe()
 	p.con.Close()
 }
 
