@@ -44,7 +44,13 @@ message Data {
     string topic = 1;
     string url = 2;
   }
+  message Email {
+    string host = 1;
+    string username = 2;
+    string password = 3;
+  }
   Database database = 1;
   Redis redis = 2;
   Pulsar pulsar = 3;
+  Email email = 4;
 }
