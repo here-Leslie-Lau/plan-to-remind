@@ -23,7 +23,7 @@ func NewPlanService(uc *biz.PlanUsecase, logger log.Logger) *PlanService {
 }
 
 func (s *PlanService) CreatePlan(ctx context.Context, req *v1.CreatePlanRequest) (*emptypb.Empty, error) {
-	deadTime, err := time.Parse(format.DateSecondLayout, req.DeadTime)
+	deadTime, err := time.Parse(format.DateLayout, req.DeadTime)
 	if err != nil {
 		s.log.Warnw("CreatePlan time parse error", "dead_time:", req.DeadTime, "err:", err)
 		return nil, err

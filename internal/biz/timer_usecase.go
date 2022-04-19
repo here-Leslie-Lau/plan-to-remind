@@ -98,6 +98,7 @@ func (uc *TimerUsecase) PlanToInvalid(ctx context.Context) error {
 		return err
 	}
 	for _, p := range list {
+		p.repo = RepoPlan
 		p.State = model.PlanStateOff
 		if err := p.Update(ctx); err != nil {
 			uc.log.Errorw("PlanToInvalid update plan error", "plan_id:", p.ID, "err:", err)
