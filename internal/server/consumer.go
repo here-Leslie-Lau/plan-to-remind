@@ -46,14 +46,11 @@ func (c *Consumer) listenConsumer(name string) {
 				return
 			}
 			c.log.Errorw("listenConsumer consume fail", "err:", err)
-			// todo 确认消息发送失败
 			continue
 		}
 		if err := c.handles[name].Handle(ctx, result); err != nil {
 			c.log.Errorw("listenConsumer Handle fail", "name:", name, "result:", string(result), "err:", err)
-			// todo 确认消息发送失败
 			continue
 		}
-		// todo 确认消息发送成功
 	}
 }

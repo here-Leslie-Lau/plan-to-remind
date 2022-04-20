@@ -12,8 +12,12 @@ type PulsarConsumer struct {
 func (p *PulsarConsumer) Consume(ctx context.Context) ([]byte, error) {
 	msg, err := p.con.Receive(ctx)
 	if err != nil {
+		// Failed to send confirmation message
+		p.con.Nack(msg)
 		return nil, err
 	}
+	// Confirm that the message was sent successfully
+	p.con.Ack(msg)
 	return msg.Payload(), nil
 }
 
