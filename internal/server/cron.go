@@ -2,8 +2,9 @@ package server
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/log"
+	klog "github.com/go-kratos/kratos/v2/log"
 	"github.com/robfig/cron/v3"
+	"plan-to-remind/internal/pkg/log"
 	"plan-to-remind/internal/service"
 )
 
@@ -13,7 +14,7 @@ type CronServer struct {
 	svc *service.TimerService
 }
 
-func NewCronServer(svc *service.TimerService, logger log.Logger) *CronServer {
+func NewCronServer(svc *service.TimerService, logger klog.Logger) *CronServer {
 	return &CronServer{c: cron.New(), log: log.NewHelper(logger), svc: svc}
 }
 
@@ -57,6 +58,6 @@ func (c *CronServer) addFunc() {
 		if err != nil {
 			panic(err)
 		}
-		c.log.Infow("cron_server addFunc success", "name:", tab.Name, "spec:", tab.Expression)
+		c.log.Info("cron_server addFunc success", "name:", tab.Name, "spec:", tab.Expression)
 	}
 }
