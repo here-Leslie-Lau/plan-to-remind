@@ -57,6 +57,6 @@ func (c *CronServer) addFunc() {
 		if err != nil {
 			panic(err)
 		}
-		c.log.Infow("cron_server addFunc success", "name:", tab.Name)
+		c.log.Infow("cron_server addFunc success", "name:", tab.Name, "spec:", tab.Expression)
 	}
 }
