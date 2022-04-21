@@ -32,6 +32,22 @@ func (h *Helper) Log(level int8, info string, keyvals ...interface{}) {
 	_ = h.log.Log(log.Level(level), kvs...)
 }
 
+func (h *Helper) Debug(info string, keyvals ...interface{}) {
+	h.Log(LevelDebug, info, keyvals...)
+}
+
 func (h *Helper) Info(info string, keyvals ...interface{}) {
 	h.Log(LevelInfo, info, keyvals...)
+}
+
+func (h *Helper) Warn(info string, keyvals ...interface{}) {
+	h.Log(LevelWarn, info, keyvals...)
+}
+
+func (h *Helper) Error(info string, keyvals ...interface{}) {
+	h.Log(LevelError, info, keyvals...)
+}
+
+func (h *Helper) Fatal(info string, keyvals ...interface{}) {
+	h.Log(LevelFatal, info, keyvals...)
 }
