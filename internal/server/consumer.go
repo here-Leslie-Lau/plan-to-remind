@@ -2,21 +2,18 @@ package server
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/log"
+	"plan-to-remind/internal/pkg/log"
 	"plan-to-remind/internal/pkg/mq"
 	"strings"
-	"time"
 )
 
 type Consumer struct {
 	consumers map[string]mq.Consumer
 	log       *log.Helper
-	handles   map[string]ConsumeHandle
+	handles   map[string]Handler
 }
 
-type ConsumeHandle interface {
-	Handle(ctx context.Context, result []byte) error
-}
+type Handler func(ctx context.Context, result []byte) error
 
 func (c *Consumer) Start(_ context.Context) error {
 	// 消息监听
@@ -36,20 +33,28 @@ func (c *Consumer) Stop(_ context.Context) error {
 }
 
 func (c *Consumer) listenConsumer(name string) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
 	for {
-		result, err := c.consumers[name].Consume(context.Background())
-		if err != nil {
-			if strings.Contains(err.Error(), "ConsumerClosed") {
-				c.log.Warnw("listenConsumer consume close", "name:", name, "err:", err)
-				return
-			}
-			c.log.Errorw("listenConsumer consume fail", "err:", err)
+		consumer, ok := c.consumers[name]
+		if !ok {
+			c.log.Error("listenConsumer consumers is nil", "name", name)
 			continue
 		}
-		if err := c.handles[name].Handle(ctx, result); err != nil {
-			c.log.Errorw("listenConsumer Handle fail", "name:", name, "result:", string(result), "err:", err)
+		result, err := consumer.Consume(context.Background())
+		if err != nil {
+			if strings.Contains(err.Error(), "ConsumerClosed") {
+				c.log.Warn("listenConsumer consume close", "name:", name, "err:", err)
+				return
+			}
+			c.log.Error("listenConsumer consume fail", "err:", err)
+			continue
+		}
+		handler, ok := c.handles[name]
+		if !ok {
+			c.log.Error("listenConsumer handle is nil", "name", name)
+			continue
+		}
+		if err := handler(context.Background(), result); err != nil {
+			c.log.Error("listenConsumer Handle fail", "name:", name, "result:", string(result), "err:", err)
 			continue
 		}
 	}

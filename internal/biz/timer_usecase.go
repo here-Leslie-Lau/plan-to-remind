@@ -2,11 +2,11 @@ package biz
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/conf"
 	"plan-to-remind/internal/data/model"
+	"plan-to-remind/internal/pkg/json"
 	"plan-to-remind/internal/pkg/mq"
 	producer2 "plan-to-remind/internal/pkg/mq/producer"
 	"strconv"
@@ -18,6 +18,7 @@ type TimerUsecase struct {
 	parser   *cronParser
 	producer mq.Producer
 	log      *log.Helper
+	json     *json.Parser
 }
 
 func NewTimerUsecase(data *conf.Data, logger log.Logger) (*TimerUsecase, func()) {
@@ -44,7 +45,7 @@ func (uc *TimerUsecase) UserPlanPush(ctx context.Context) error {
 	}
 	// push plan to delay queue
 	for _, p := range list {
-		bytes, err := json.Marshal(p)
+		bytes, err := uc.json.Marshal(p)
 		if err != nil {
 			uc.log.Errorw("UserPlanPush json marshal fail, bytes:%s, err:%v", string(bytes), err)
 			continue
