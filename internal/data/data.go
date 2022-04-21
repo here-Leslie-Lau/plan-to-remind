@@ -17,7 +17,6 @@ func (d *Data) WithCtx(ctx context.Context) *gorm.DB {
 
 func NewData(db *gorm.DB) (*Data, func(), error) {
 	closeFunc := func() {
-		// todo
 		fmt.Println("closing data...")
 	}
 	return &Data{db: db}, closeFunc, nil
