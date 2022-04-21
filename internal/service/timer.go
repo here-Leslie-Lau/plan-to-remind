@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/log"
+	klog "github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/biz"
+	"plan-to-remind/internal/pkg/log"
 	"time"
 )
 
@@ -12,7 +13,7 @@ type TimerService struct {
 	uc  *biz.TimerUsecase
 }
 
-func NewTimerService(logger log.Logger, uc *biz.TimerUsecase) *TimerService {
+func NewTimerService(logger klog.Logger, uc *biz.TimerUsecase) *TimerService {
 	return &TimerService{log: log.NewHelper(logger), uc: uc}
 }
 
@@ -20,7 +21,7 @@ func (t *TimerService) UserPlanPush() {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := t.uc.UserPlanPush(ctx); err != nil {
-		t.log.Errorw("UserPlanPush usecase UserPlanPush error", "err:", err)
+		t.log.Error("UserPlanPush usecase UserPlanPush error", "err:", err)
 	}
 }
 
@@ -29,6 +30,6 @@ func (t *TimerService) PlanToInvalid() {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := t.uc.PlanToInvalid(ctx); err != nil {
-		t.log.Errorw("PlanToInvalid usecase PlanToInvalid error", "time:", time.Now(), "err:", err)
+		t.log.Error("PlanToInvalid usecase PlanToInvalid error", "time:", time.Now(), "err:", err)
 	}
 }
