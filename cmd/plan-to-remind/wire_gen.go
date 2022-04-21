@@ -11,6 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/biz"
 	"plan-to-remind/internal/conf"
+	"plan-to-remind/internal/pkg/json"
 	"plan-to-remind/internal/server"
 	"plan-to-remind/internal/service"
 )
@@ -25,7 +26,8 @@ func wireApp(confServer *conf.Server, data *conf.Data, logger log.Logger) (*krat
 	planService := service.NewPlanService(planUsecase, logger)
 	httpServer := server.NewHTTPServer(confServer, cronService, planService, logger)
 	grpcServer := server.NewGRPCServer(confServer, cronService, planService, logger)
-	timerUsecase, cleanup := biz.NewTimerUsecase(data, logger)
+	parser := json.NewParser()
+	timerUsecase, cleanup := biz.NewTimerUsecase(data, logger, parser)
 	timerService := service.NewTimerService(logger, timerUsecase)
 	cronServer := server.NewCronServer(timerService, logger)
 	app := newApp(logger, httpServer, grpcServer, cronServer)

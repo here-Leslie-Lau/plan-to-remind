@@ -1,15 +1,15 @@
 package json
 
-import jsoniter "github.com/json-iterator/go"
-
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
+import (
+	jsoniter "github.com/json-iterator/go"
+)
 
 type Parser struct {
 	json jsoniter.API
 }
 
 func NewParser() *Parser {
-	return &Parser{json: json}
+	return &Parser{json: jsoniter.ConfigCompatibleWithStandardLibrary}
 }
 
 func (p *Parser) Marshal(v interface{}) ([]byte, error) {

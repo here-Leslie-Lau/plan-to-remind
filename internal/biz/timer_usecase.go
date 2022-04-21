@@ -21,7 +21,7 @@ type TimerUsecase struct {
 	json     *json.Parser
 }
 
-func NewTimerUsecase(data *conf.Data, logger log.Logger) (*TimerUsecase, func()) {
+func NewTimerUsecase(data *conf.Data, logger log.Logger, json *json.Parser) (*TimerUsecase, func()) {
 	cli, err := pulsar.NewClient(pulsar.ClientOptions{
 		URL: data.Pulsar.Url,
 	})
@@ -32,7 +32,7 @@ func NewTimerUsecase(data *conf.Data, logger log.Logger) (*TimerUsecase, func())
 	if err != nil {
 		panic(err)
 	}
-	return &TimerUsecase{parser: &cronParser{}, producer: producer, log: log.NewHelper(logger)}, producer.CloseFunc
+	return &TimerUsecase{parser: &cronParser{}, producer: producer, json: json, log: log.NewHelper(logger)}, producer.CloseFunc
 }
 
 // UserPlanPush 用户任务推送
