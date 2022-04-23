@@ -18,9 +18,9 @@ func (d *Data) WithCtx(ctx context.Context) *gorm.DB {
 	return d.db.WithContext(ctx)
 }
 
-func NewData(db *gorm.DB) (*Data, func(), error) {
+func NewData(db *gorm.DB, nacos config_client.IConfigClient) (*Data, func(), error) {
 	closeFunc := func() {
 		fmt.Println("closing data...")
 	}
-	return &Data{db: db}, closeFunc, nil
+	return &Data{db: db, nacos: nacos}, closeFunc, nil
 }

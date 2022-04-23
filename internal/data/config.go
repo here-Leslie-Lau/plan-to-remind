@@ -13,3 +13,7 @@ type Config struct {
 type ConfigRepo struct {
 	data *Data
 }
+
+func (repo *ConfigRepo) GetConfig() {
+
+}
