@@ -28,3 +28,17 @@ just a tiny project to plan to remind
 ## The technical architecture
 
 todo
+
+## Docker deployment
+
+- plan(this project) port:8000(http)&9000(grpc)
+- mysql port:3306
+- pulsar port:6650
+- nacos port:8848
+
+## how to run this project
+
+1. Get mysql, Pulsar, nacos ready
+2. `git clone git@github.com:here-Leslie-Lau/plan-to-remind.git`
+3. To initialize the database.run in terminal:`make init-local`
+4. `make build && make run`
