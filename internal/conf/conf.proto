@@ -49,8 +49,13 @@ message Data {
     string username = 2;
     string password = 3;
   }
+  message Nacos {
+    uint64 Port = 1;
+    string ip_addr = 2;
+  }
   Database database = 1;
   Redis redis = 2;
   Pulsar pulsar = 3;
   Email email = 4;
+  Nacos nacos = 5;
 }
