@@ -11,19 +11,19 @@ data:
     source: root:1234@tcp(127.0.0.1:3306)/plan-to-remind?charset=utf8&parseTime=True&loc=Local
     username: root
     password: "1234"
-    url: 127.0.0.1:3306
+    url: 43.138.178.12:3306
     database: plan_to_remind
   redis:
-    addr: 127.0.0.1:6379
+    addr: 43.138.178.12:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
   pulsar:
     topic: plan_to_remind
-    url: pulsar://127.0.0.1:6650
+    url: pulsar://43.138.178.12:6650
   email:
     host: smtp.qq.com
     username: XXX
     password: XXX
   nacos:
-    ip_addr: 127.0.0.1
+    ip_addr: 43.138.178.12
     port: 8848

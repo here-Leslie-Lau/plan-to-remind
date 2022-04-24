@@ -30,7 +30,9 @@ func wireApp(confServer *conf.Server, data *conf.Data, logger log.Logger) (*krat
 	timerUsecase, cleanup := biz.NewTimerUsecase(data, logger, parser)
 	timerService := service.NewTimerService(logger, timerUsecase)
 	cronServer := server.NewCronServer(timerService, logger)
-	consumerServer := server.NewConsumerServer(data, parser, logger)
+	consumerUsecase := biz.NewConsumerUsecase(data, parser)
+	consumerService := service.NewConsumerService(consumerUsecase, logger)
+	consumerServer := server.NewConsumerServer(consumerService, data, logger)
 	app := newApp(logger, httpServer, grpcServer, cronServer, consumerServer)
 	return app, func() {
 		cleanup()

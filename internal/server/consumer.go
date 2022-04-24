@@ -4,12 +4,11 @@ import (
 	"context"
 	"github.com/apache/pulsar-client-go/pulsar"
 	klog "github.com/go-kratos/kratos/v2/log"
-	"plan-to-remind/internal/biz"
 	"plan-to-remind/internal/conf"
-	"plan-to-remind/internal/pkg/json"
 	"plan-to-remind/internal/pkg/log"
 	"plan-to-remind/internal/pkg/mq"
 	consumerpkg "plan-to-remind/internal/pkg/mq/consumer"
+	"plan-to-remind/internal/service"
 	"strings"
 )
 
@@ -20,21 +19,19 @@ const (
 var handleNames = []string{handleNamePlanToRemind}
 
 type ConsumerServer struct {
+	consumer  *service.ConsumerService
 	consumers map[string]mq.Consumer
 	log       *log.Helper
 	handles   map[string]Handler
 }
 
-func NewConsumerServer(data *conf.Data, parser *json.Parser, logger klog.Logger) *ConsumerServer {
+func NewConsumerServer(consumerService *service.ConsumerService, data *conf.Data, logger klog.Logger) *ConsumerServer {
 	cli, err := pulsar.NewClient(pulsar.ClientOptions{
 		URL: data.Pulsar.Url,
 	})
 	if err != nil {
 		panic(err)
 	}
-
-	// new consumer_usecase
-	uc := biz.NewConsumerUsecase(data, parser)
 
 	consumers := make(map[string]mq.Consumer)
 	for _, name := range handleNames {
@@ -47,8 +44,8 @@ func NewConsumerServer(data *conf.Data, parser *json.Parser, logger klog.Logger)
 
 	// a little ugly...
 	handles := make(map[string]Handler)
-	handles[handleNamePlanToRemind] = uc.PlanToRemind
-	return &ConsumerServer{log: log.NewHelper(logger), consumers: consumers, handles: handles}
+	handles[handleNamePlanToRemind] = consumerService.PlanToRemind
+	return &ConsumerServer{log: log.NewHelper(logger), handles: handles, consumer: consumerService, consumers: consumers}
 }
 
 type Handler func(ctx context.Context, result []byte) error
@@ -92,7 +89,6 @@ func (c *ConsumerServer) listenConsumer(name string) {
 			continue
 		}
 		if err := handler(context.Background(), result); err != nil {
-			c.log.Error("listenConsumer Handle fail", "name:", name, "result:", string(result), "err:", err)
 			continue
 		}
 	}

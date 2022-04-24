@@ -101,5 +101,6 @@ func initRepo(confData *conf.Data) []func() {
 	}
 	data.NewCronSpecRepo(dataModel)
 	data.NewPlanRepo(dataModel)
+	data.NewConfigRepo(dataModel)
 	return []func(){f, f2}
 }
