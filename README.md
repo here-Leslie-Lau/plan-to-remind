@@ -20,7 +20,7 @@ just a tiny project to plan to remind
 - [x] v0.5.1: 本地打包docker镜像部署
 - [x] v0.5.2: 远程服务器部署与基本环境搭建(db,mq...)
 - [x] v0.5.3: 增加nacos读取配置封装
-- v0.6: nacos配置读取
+- [x] v0.6: nacos配置读取
 - v0.7: 时间解析器功能完善
 - v1.0: 每日计划完成度统计数据的生成
 - v1.1: 每日计划完成度查询，修改，删除
