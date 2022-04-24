@@ -24,3 +24,6 @@ data:
     host: smtp.qq.com
     username: XXX
     password: XXX
+  nacos:
+    ip_addr: 127.0.0.1
+    port: 8848
