@@ -13,7 +13,7 @@ func NewConfigClient(data *conf.Data) config_client.IConfigClient {
 		Port:   data.Nacos.Port,
 	}}
 	cc := constant.ClientConfig{
-		TimeoutMs:           5000,
+		TimeoutMs:           3500,
 		NotLoadCacheAtStart: true,
 		LogLevel:            "debug",
 	}

@@ -94,8 +94,8 @@ func main() {
 
 func initRepo(confData *conf.Data) []func() {
 	db, f := data.NewGormDb(confData)
-	_ = data.NewConfigClient(confData)
-	dataModel, f2, err := data.NewData(db)
+	nacos := data.NewConfigClient(confData)
+	dataModel, f2, err := data.NewData(db, nacos)
 	if err != nil {
 		panic(err)
 	}

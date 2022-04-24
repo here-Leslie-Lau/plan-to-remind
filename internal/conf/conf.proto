@@ -50,7 +50,7 @@ message Data {
     string password = 3;
   }
   message Nacos {
-    uint64 Port = 1;
+    uint64 port = 1;
     string ip_addr = 2;
   }
   Database database = 1;
