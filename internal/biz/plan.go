@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"time"
 )
 
 // Plan 计划表
@@ -45,12 +46,23 @@ type PlanFilter struct {
 }
 
 type PlanCompletion struct {
-	BeginAt int64  `json:"begin_at"`
-	EndAt   int64  `json:"end_at"`
+	BeginAt int64 `json:"begin_at"`
+	EndAt   int64 `json:"end_at"`
 	// value object
 	PlanId        uint64 `json:"plan_id"`
 	TotalNums     int    `json:"total_nums"`
 	CompletedNums int    `json:"completed_nums"`
+}
+
+func NewDefaultPlanCompletion(planId uint64) *PlanCompletion {
+	now := time.Now()
+	// 默认一周
+	return &PlanCompletion{
+		BeginAt:   now.Unix(),
+		EndAt:     now.AddDate(0, 0, 7).Unix(),
+		PlanId:    planId,
+		TotalNums: 7,
+	}
 }
 
 type PlanRepo interface {
@@ -68,7 +80,10 @@ func (p *Plan) Get(ctx context.Context) (*Plan, error) {
 }
 
 func (p *Plan) Create(ctx context.Context) error {
-	return p.repo.SavePlan(ctx, p)
+	if err := p.repo.SavePlan(ctx, p); err != nil {
+		return err
+	}
+	return p.repo.SavePlanCompletion(ctx, NewDefaultPlanCompletion(p.ID))
 }
 
 func (p *Plan) Update(ctx context.Context) error {

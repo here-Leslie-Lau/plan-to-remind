@@ -106,7 +106,11 @@ func (repo *PlanRepo) SavePlan(ctx context.Context, plan *biz.Plan) error {
 		return sql.Where("id = ?", plan.ID).Updates(result).Error
 	}
 	// create
-	return sql.Create(result).Error
+	if err := sql.Create(result).Error; err != nil {
+		return err
+	}
+	plan.ID = uint64(result.ID)
+	return nil
 }
 
 func (repo *PlanRepo) SavePlanCompletion(ctx context.Context, completion *biz.PlanCompletion) error {
