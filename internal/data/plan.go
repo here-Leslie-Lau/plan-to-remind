@@ -17,9 +17,9 @@ type PlanRepo struct {
 	data *Data
 }
 
-func (p *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
+func (repo *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
 	plan := &model.Plan{}
-	if err := p.data.WithCtx(ctx).Model(&model.Plan{}).Where("id = ?", id).First(plan).Error; err != nil {
+	if err := repo.data.WithCtx(ctx).Model(&model.Plan{}).Where("id = ?", id).First(plan).Error; err != nil {
 		return nil, err
 	}
 	result := &biz.Plan{
@@ -33,8 +33,8 @@ func (p *PlanRepo) GetPlan(ctx context.Context, id uint64) (*biz.Plan, error) {
 	return result, nil
 }
 
-func (p *PlanRepo) DeletePlan(ctx context.Context, id uint64) error {
-	return p.data.WithCtx(ctx).Model(&model.Plan{}).Where("id = ?", id).Update("deleted_at", time.Now()).Error
+func (repo *PlanRepo) DeletePlan(ctx context.Context, id uint64) error {
+	return repo.data.WithCtx(ctx).Model(&model.Plan{}).Where("id = ?", id).Update("deleted_at", time.Now()).Error
 }
 
 // planModel 联表查询用到的结构体
@@ -49,9 +49,9 @@ type planModel struct {
 	Expression string `json:"expression"`
 }
 
-func (p *PlanRepo) ListPlanByFilter(ctx context.Context, f *biz.PlanFilter) ([]*biz.Plan, error) {
+func (repo *PlanRepo) ListPlanByFilter(ctx context.Context, f *biz.PlanFilter) ([]*biz.Plan, error) {
 	var list []*planModel
-	db := p.data.WithCtx(ctx).Select("plans.state AS state,plans.level AS level,plans.id AS id,plans.cron_id AS cron_id,plans.dead_time AS dead_time,plans.name AS name,cron_specs.desc AS cron_desc,cron_specs.expression AS expression").
+	db := repo.data.WithCtx(ctx).Select("plans.state AS state,plans.level AS level,plans.id AS id,plans.cron_id AS cron_id,plans.dead_time AS dead_time,plans.name AS name,cron_specs.desc AS cron_desc,cron_specs.expression AS expression").
 		Table(TableNamePlans).
 		Joins("JOIN cron_specs ON plans.cron_id = cron_specs.id").Scopes(limitPlanByFilter(f), limitOrderBy(f.OrderBy))
 	if err := db.Scan(&list).Error; err != nil {
@@ -92,7 +92,7 @@ func limitPlanByFilter(f *biz.PlanFilter) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func (p *PlanRepo) SavePlan(ctx context.Context, plan *biz.Plan) error {
+func (repo *PlanRepo) SavePlan(ctx context.Context, plan *biz.Plan) error {
 	result := &model.Plan{
 		State:    plan.State,
 		Level:    plan.Level,
@@ -100,13 +100,33 @@ func (p *PlanRepo) SavePlan(ctx context.Context, plan *biz.Plan) error {
 		DeadTime: plan.DeadTime,
 		Name:     plan.Name,
 	}
-	sql := p.data.WithCtx(ctx).Model(&model.Plan{})
+	sql := repo.data.WithCtx(ctx).Model(&model.Plan{})
 	if plan.ID != 0 {
 		// update
 		return sql.Where("id = ?", plan.ID).Updates(result).Error
 	}
 	// create
 	return sql.Create(result).Error
+}
+
+func (repo *PlanRepo) SavePlanCompletion(ctx context.Context, completion *biz.PlanCompletion) error {
+	plan := &model.PlanCompletion{
+		TotalNums:     completion.TotalNums,
+		CompletedNums: completion.CompletedNums,
+		BeginAt:       completion.BeginAt,
+		EndAt:         completion.EndAt,
+		PlanId:        completion.PlanId,
+	}
+	sql := repo.data.WithCtx(ctx).Model(&model.PlanCompletion{})
+	// update
+	if err := sql.Where("plan_id = ? AND end_at >= ?", plan.PlanId, time.Now().Unix()).Updates(plan).Error; err != nil {
+		return err
+	}
+	if sql.RowsAffected == 1 {
+		return nil
+	}
+	// create
+	return sql.Create(plan).Error
 }
 
 func NewPlanRepo(data *Data) {

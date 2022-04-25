@@ -44,11 +44,21 @@ type PlanFilter struct {
 	OrderBy       string
 }
 
+type PlanCompletion struct {
+	BeginAt int64  `json:"begin_at"`
+	EndAt   int64  `json:"end_at"`
+	// value object
+	PlanId        uint64 `json:"plan_id"`
+	TotalNums     int    `json:"total_nums"`
+	CompletedNums int    `json:"completed_nums"`
+}
+
 type PlanRepo interface {
 	SavePlan(ctx context.Context, plan *Plan) error
 	GetPlan(ctx context.Context, id uint64) (*Plan, error)
 	DeletePlan(ctx context.Context, id uint64) error
 	ListPlanByFilter(ctx context.Context, f *PlanFilter) ([]*Plan, error)
+	SavePlanCompletion(ctx context.Context, completion *PlanCompletion) error
 }
 
 var RepoPlan PlanRepo
