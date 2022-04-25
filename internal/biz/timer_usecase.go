@@ -3,10 +3,11 @@ package biz
 import (
 	"context"
 	"github.com/apache/pulsar-client-go/pulsar"
-	"github.com/go-kratos/kratos/v2/log"
+	klog "github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/conf"
 	"plan-to-remind/internal/data/model"
 	"plan-to-remind/internal/pkg/json"
+	"plan-to-remind/internal/pkg/log"
 	"plan-to-remind/internal/pkg/mq"
 	producer2 "plan-to-remind/internal/pkg/mq/producer"
 	"strconv"
@@ -21,7 +22,7 @@ type TimerUsecase struct {
 	json     *json.Parser
 }
 
-func NewTimerUsecase(data *conf.Data, logger log.Logger, json *json.Parser) (*TimerUsecase, func()) {
+func NewTimerUsecase(data *conf.Data, logger klog.Logger, json *json.Parser) (*TimerUsecase, func()) {
 	cli, err := pulsar.NewClient(pulsar.ClientOptions{
 		URL: data.Pulsar.Url,
 	})
@@ -47,16 +48,16 @@ func (uc *TimerUsecase) UserPlanPush(ctx context.Context) error {
 	for _, p := range list {
 		bytes, err := uc.json.Marshal(p)
 		if err != nil {
-			uc.log.Errorw("UserPlanPush json marshal fail, bytes:%s, err:%v", string(bytes), err)
+			uc.log.Error("UserPlanPush json marshal fail, bytes:%s, err:%v", string(bytes), err)
 			continue
 		}
-		dur := uc.parser.Parser(p.CronDesc)
+		dur := uc.parser.Parser(p.Expression)
 		if dur == 0 {
-			uc.log.Debugw("UserPlanPush Parser cron_expression continue", "duration:", dur)
+			uc.log.Debug("UserPlanPush Parser cron_expression continue", "duration:", dur)
 			continue
 		}
 		if err := uc.producer.DelayAfterSendMsg(ctx, bytes, dur); err != nil {
-			uc.log.Errorw("UserPlanPush DelayAfterSendMsg fail, bytes:%s, dur:%v, err:%v", string(bytes), dur, err)
+			uc.log.Error("UserPlanPush DelayAfterSendMsg fail, bytes:%s, dur:%v, err:%v", string(bytes), dur, err)
 			continue
 		}
 	}
@@ -102,7 +103,7 @@ func (uc *TimerUsecase) PlanToInvalid(ctx context.Context) error {
 		p.repo = RepoPlan
 		p.State = model.PlanStateOff
 		if err := p.Update(ctx); err != nil {
-			uc.log.Errorw("PlanToInvalid update plan error", "plan_id:", p.ID, "err:", err)
+			uc.log.Error("PlanToInvalid update plan error", "plan_id:", p.ID, "err:", err)
 			continue
 		}
 	}

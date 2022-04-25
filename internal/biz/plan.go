@@ -19,7 +19,9 @@ type Plan struct {
 	Name string `json:"name"`
 	// 计划时间表描述
 	CronDesc string `json:"cron_desc"`
-	repo     PlanRepo
+	// cron expression
+	Expression string `json:"expression"`
+	repo       PlanRepo
 }
 
 func NewPlan(id uint64, state uint8, level uint8, cronId uint64, deadTime int64, name string, cronDesc string) *Plan {

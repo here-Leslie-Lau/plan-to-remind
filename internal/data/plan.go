@@ -39,18 +39,19 @@ func (p *PlanRepo) DeletePlan(ctx context.Context, id uint64) error {
 
 // planModel 联表查询用到的结构体
 type planModel struct {
-	State    uint8  `json:"state"`
-	Level    uint8  `json:"level"`
-	ID       uint64 `json:"id"`
-	CronID   uint64 `json:"cron_id"`
-	DeadTime int64  `json:"dead_time"`
-	Name     string `json:"name"`
-	CronDesc string `json:"cron_desc"`
+	State      uint8  `json:"state"`
+	Level      uint8  `json:"level"`
+	ID         uint64 `json:"id"`
+	CronID     uint64 `json:"cron_id"`
+	DeadTime   int64  `json:"dead_time"`
+	Name       string `json:"name"`
+	CronDesc   string `json:"cron_desc"`
+	Expression string `json:"expression"`
 }
 
 func (p *PlanRepo) ListPlanByFilter(ctx context.Context, f *biz.PlanFilter) ([]*biz.Plan, error) {
 	var list []*planModel
-	db := p.data.WithCtx(ctx).Select("plans.state AS state,plans.level AS level,plans.id AS id,plans.cron_id AS cron_id,plans.dead_time AS dead_time,plans.name AS name,cron_specs.desc AS cron_desc").
+	db := p.data.WithCtx(ctx).Select("plans.state AS state,plans.level AS level,plans.id AS id,plans.cron_id AS cron_id,plans.dead_time AS dead_time,plans.name AS name,cron_specs.desc AS cron_desc,cron_specs.expression AS expression").
 		Table(TableNamePlans).
 		Joins("JOIN cron_specs ON plans.cron_id = cron_specs.id").Scopes(limitPlanByFilter(f), limitOrderBy(f.OrderBy))
 	if err := db.Scan(&list).Error; err != nil {
@@ -60,13 +61,14 @@ func (p *PlanRepo) ListPlanByFilter(ctx context.Context, f *biz.PlanFilter) ([]*
 	// maybe need to use go-copier
 	for _, plan := range list {
 		result = append(result, &biz.Plan{
-			ID:       plan.ID,
-			State:    plan.State,
-			Level:    plan.Level,
-			CronId:   plan.CronID,
-			DeadTime: plan.DeadTime,
-			Name:     plan.Name,
-			CronDesc: plan.CronDesc,
+			ID:         plan.ID,
+			State:      plan.State,
+			Level:      plan.Level,
+			CronId:     plan.CronID,
+			DeadTime:   plan.DeadTime,
+			Name:       plan.Name,
+			CronDesc:   plan.CronDesc,
+			Expression: plan.Expression,
 		})
 	}
 	return result, nil

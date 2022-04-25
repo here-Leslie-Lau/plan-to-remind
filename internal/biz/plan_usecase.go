@@ -23,6 +23,7 @@ func (uc *PlanUsecase) GetPlanByID(ctx context.Context, id uint64) (*Plan, error
 		return nil, err
 	}
 	plan.CronDesc = cron.Desc
+	plan.Expression = cron.Expression
 	return plan, nil
 }
 
