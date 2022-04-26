@@ -1019,3 +1019,116 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListPlanReplyValidationError{}
+
+// Validate checks the field values on CompletePlanRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CompletePlanRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CompletePlanRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CompletePlanRequestMultiError, or nil if none found.
+func (m *CompletePlanRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CompletePlanRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetId() <= 0 {
+		err := CompletePlanRequestValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return CompletePlanRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CompletePlanRequestMultiError is an error wrapping multiple validation
+// errors returned by CompletePlanRequest.ValidateAll() if the designated
+// constraints aren't met.
+type CompletePlanRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CompletePlanRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CompletePlanRequestMultiError) AllErrors() []error { return m }
+
+// CompletePlanRequestValidationError is the validation error returned by
+// CompletePlanRequest.Validate if the designated constraints aren't met.
+type CompletePlanRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CompletePlanRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CompletePlanRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CompletePlanRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CompletePlanRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CompletePlanRequestValidationError) ErrorName() string {
+	return "CompletePlanRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CompletePlanRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCompletePlanRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CompletePlanRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CompletePlanRequestValidationError{}

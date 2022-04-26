@@ -6,6 +6,7 @@ require (
 	github.com/apache/pulsar-client-go v0.8.1
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/go-kratos/kratos/v2 v2.2.1
+	github.com/gomodule/redigo v1.8.8 // indirect
 	github.com/google/wire v0.5.0
 	github.com/json-iterator/go v1.1.12
 	github.com/nacos-group/nacos-sdk-go v1.1.1

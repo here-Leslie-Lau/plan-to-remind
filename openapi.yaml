@@ -1,5 +1,5 @@
 # Generated with protoc-gen-openapi
-# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
 
 openapi: 3.0.3
 info:
@@ -83,6 +83,21 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UpdateCronRequest'
                 required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /api/v1/plan/complete:
+        get:
+            tags:
+                - Plan
+            operationId: Plan_CompletePlan
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint64
             responses:
                 "200":
                     description: OK

@@ -120,3 +120,8 @@ func (s *PlanService) ListPlan(ctx context.Context, req *v1.ListPlanRequest) (*v
 	}
 	return &v1.ListPlanReply{List: list}, nil
 }
+
+func (s *PlanService) CompletePlan(ctx context.Context, req *v1.CompletePlanRequest) (*emptypb.Empty, error) {
+	// todo 用户请求频率限制
+	return nil, nil
+}

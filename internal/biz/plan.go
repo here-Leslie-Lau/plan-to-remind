@@ -71,6 +71,7 @@ type PlanRepo interface {
 	DeletePlan(ctx context.Context, id uint64) error
 	ListPlanByFilter(ctx context.Context, f *PlanFilter) ([]*Plan, error)
 	SavePlanCompletion(ctx context.Context, completion *PlanCompletion) error
+	GetLatestPlanCompletion(ctx context.Context, planId uint64) (*PlanCompletion, error)
 }
 
 var RepoPlan PlanRepo
@@ -96,4 +97,13 @@ func (p *Plan) Delete(ctx context.Context) error {
 
 func (p *Plan) List(ctx context.Context, f *PlanFilter) ([]*Plan, error) {
 	return p.repo.ListPlanByFilter(ctx, f)
+}
+
+func (p *Plan) Complete(ctx context.Context) error {
+	completion, err := p.repo.GetLatestPlanCompletion(ctx, p.ID)
+	if err != nil {
+		return err
+	}
+	completion.CompletedNums += 1
+	return p.repo.SavePlanCompletion(ctx, completion)
 }

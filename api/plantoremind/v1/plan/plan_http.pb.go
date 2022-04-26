@@ -19,6 +19,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 type PlanHTTPServer interface {
+	CompletePlan(context.Context, *CompletePlanRequest) (*emptypb.Empty, error)
 	CreatePlan(context.Context, *CreatePlanRequest) (*emptypb.Empty, error)
 	DeletePlan(context.Context, *DeletePlanRequest) (*emptypb.Empty, error)
 	GetPlan(context.Context, *GetPlanRequest) (*GetPlanReply, error)
@@ -33,6 +34,7 @@ func RegisterPlanHTTPServer(s *http.Server, srv PlanHTTPServer) {
 	r.POST("/api/v1/plan/delete", _Plan_DeletePlan0_HTTP_Handler(srv))
 	r.POST("/api/v1/plan/get", _Plan_GetPlan0_HTTP_Handler(srv))
 	r.POST("/api/v1/plan/list", _Plan_ListPlan0_HTTP_Handler(srv))
+	r.GET("/api/v1/plan/complete", _Plan_CompletePlan0_HTTP_Handler(srv))
 }
 
 func _Plan_CreatePlan0_HTTP_Handler(srv PlanHTTPServer) func(ctx http.Context) error {
@@ -130,7 +132,27 @@ func _Plan_ListPlan0_HTTP_Handler(srv PlanHTTPServer) func(ctx http.Context) err
 	}
 }
 
+func _Plan_CompletePlan0_HTTP_Handler(srv PlanHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CompletePlanRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/api.plantoremind.v1.plan.Plan/CompletePlan")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CompletePlan(ctx, req.(*CompletePlanRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type PlanHTTPClient interface {
+	CompletePlan(ctx context.Context, req *CompletePlanRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	CreatePlan(ctx context.Context, req *CreatePlanRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeletePlan(ctx context.Context, req *DeletePlanRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetPlan(ctx context.Context, req *GetPlanRequest, opts ...http.CallOption) (rsp *GetPlanReply, err error)
@@ -144,6 +166,19 @@ type PlanHTTPClientImpl struct {
 
 func NewPlanHTTPClient(client *http.Client) PlanHTTPClient {
 	return &PlanHTTPClientImpl{client}
+}
+
+func (c *PlanHTTPClientImpl) CompletePlan(ctx context.Context, in *CompletePlanRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/v1/plan/complete"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation("/api.plantoremind.v1.plan.Plan/CompletePlan"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *PlanHTTPClientImpl) CreatePlan(ctx context.Context, in *CreatePlanRequest, opts ...http.CallOption) (*emptypb.Empty, error) {

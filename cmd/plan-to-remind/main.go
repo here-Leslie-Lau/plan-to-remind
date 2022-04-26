@@ -95,7 +95,8 @@ func main() {
 func initRepo(confData *conf.Data) []func() {
 	db, f := data.NewGormDb(confData)
 	nacos := data.NewConfigClient(confData)
-	dataModel, f2, err := data.NewData(db, nacos)
+	redis := data.NewRedisClient(confData)
+	dataModel, f2, err := data.NewData(db, nacos, redis)
 	if err != nil {
 		panic(err)
 	}

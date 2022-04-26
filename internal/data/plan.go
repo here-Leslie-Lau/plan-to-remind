@@ -133,6 +133,29 @@ func (repo *PlanRepo) SavePlanCompletion(ctx context.Context, completion *biz.Pl
 	return sql.Create(plan).Error
 }
 
+func limitCompletionByPlanId(planId uint64) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		db = db.Where("plan_id = ? AND end_at >= ?", planId, time.Now().Unix())
+		return db
+	}
+}
+
+func (repo *PlanRepo) GetLatestPlanCompletion(ctx context.Context, planId uint64) (*biz.PlanCompletion, error) {
+	result := &model.PlanCompletion{}
+	sql := repo.data.WithCtx(ctx).Model(&model.PlanCompletion{})
+	sql = sql.Scopes(limitCompletionByPlanId(planId), limitOrderBy("id DESC"))
+	if err := sql.First(result).Error; err != nil {
+		return nil, err
+	}
+	return &biz.PlanCompletion{
+		BeginAt:       result.BeginAt,
+		EndAt:         result.EndAt,
+		PlanId:        result.PlanId,
+		TotalNums:     result.TotalNums,
+		CompletedNums: result.CompletedNums,
+	}, nil
+}
+
 func NewPlanRepo(data *Data) {
 	biz.RepoPlan = &PlanRepo{data: data}
 }

@@ -40,6 +40,11 @@ service Plan {
       body: "*"
     };
   };
+  rpc CompletePlan (CompletePlanRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/api/v1/plan/complete"
+    };
+  };
 }
 
 message CreatePlanRequest {
@@ -108,4 +113,8 @@ message ListPlanRequest {
 }
 message ListPlanReply {
   repeated PlanData list = 1;
+}
+
+message CompletePlanRequest {
+  uint64 id = 1 [(validate.rules).uint64.gt = 0];
 }
