@@ -5,6 +5,7 @@ import (
 	klog "github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/biz"
 	"plan-to-remind/internal/pkg/format"
+	"plan-to-remind/internal/pkg/limiter"
 	"plan-to-remind/internal/pkg/log"
 	"time"
 
@@ -15,12 +16,13 @@ import (
 type PlanService struct {
 	v1.UnimplementedPlanServer
 
-	uc  *biz.PlanUsecase
-	log *log.Helper
+	uc      *biz.PlanUsecase
+	log     *log.Helper
+	limiter limiter.UserRequestLimiter
 }
 
 func NewPlanService(uc *biz.PlanUsecase, logger klog.Logger) *PlanService {
-	return &PlanService{uc: uc, log: log.NewHelper(logger)}
+	return &PlanService{uc: uc, log: log.NewHelper(logger), limiter: limiter.RequestPool.GetLimiter(limiter.LimitExpireThreeSecond)}
 }
 
 func (s *PlanService) CreatePlan(ctx context.Context, req *v1.CreatePlanRequest) (*emptypb.Empty, error) {
@@ -122,6 +124,9 @@ func (s *PlanService) ListPlan(ctx context.Context, req *v1.ListPlanRequest) (*v
 }
 
 func (s *PlanService) CompletePlan(ctx context.Context, req *v1.CompletePlanRequest) (*emptypb.Empty, error) {
-	// todo 用户请求频率限制
+	// 用户请求频率限制
+	if err := s.limiter.Limit(""); err != nil {
+		return nil, err
+	}
 	return nil, nil
 }

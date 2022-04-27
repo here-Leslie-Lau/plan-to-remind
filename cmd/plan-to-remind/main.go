@@ -11,6 +11,7 @@ import (
 	"os"
 	"plan-to-remind/internal/conf"
 	"plan-to-remind/internal/data"
+	"plan-to-remind/internal/pkg/limiter"
 	"plan-to-remind/internal/server"
 )
 
@@ -103,5 +104,7 @@ func initRepo(confData *conf.Data) []func() {
 	data.NewCronSpecRepo(dataModel)
 	data.NewPlanRepo(dataModel)
 	data.NewConfigRepo(dataModel)
+
+	limiter.InitPool(dataModel)
 	return []func(){f, f2}
 }
