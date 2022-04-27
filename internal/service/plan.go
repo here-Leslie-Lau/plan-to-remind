@@ -125,8 +125,12 @@ func (s *PlanService) ListPlan(ctx context.Context, req *v1.ListPlanRequest) (*v
 
 func (s *PlanService) CompletePlan(ctx context.Context, req *v1.CompletePlanRequest) (*emptypb.Empty, error) {
 	// 用户请求频率限制
-	if err := s.limiter.Limit(""); err != nil {
+	if err := s.limiter.Limit(limiter.GetCompletePlanKey(req.Id)); err != nil {
 		return nil, err
 	}
-	return nil, nil
+	if err := s.uc.CompletePlan(ctx, req.Id); err != nil {
+		s.log.Error("CompletePlan usecase CompletePlan fail", "plan_id", req.Id)
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }

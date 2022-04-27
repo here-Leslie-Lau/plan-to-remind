@@ -46,5 +46,6 @@ func (uc *PlanUsecase) ListPlanByFilter(ctx context.Context, f *PlanFilter) ([]*
 }
 
 func (uc *PlanUsecase) CompletePlan(ctx context.Context, id uint64) error {
-	return nil
+	plan := NewDefaultPlan(id)
+	return plan.Complete(ctx)
 }

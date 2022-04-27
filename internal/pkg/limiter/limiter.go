@@ -21,15 +21,6 @@ type option struct {
 
 type Option func(*option)
 
-type LimitExpireTyp uint32
-
-const (
-	LimitExpireThreeSecond LimitExpireTyp = 3
-	LimitExpireFiveSecond  LimitExpireTyp = 5
-)
-
-var limitExpireTimes = []LimitExpireTyp{LimitExpireThreeSecond, LimitExpireFiveSecond}
-
 func WithExpire(expire LimitExpireTyp) Option {
 	return func(o *option) {
 		o.expire = uint32(expire)
