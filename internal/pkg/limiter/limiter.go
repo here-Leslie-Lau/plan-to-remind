@@ -32,7 +32,7 @@ func newRedisRequestLimiter(data *data.Data, opts ...Option) UserRequestLimiter 
 	for _, opt := range opts {
 		opt(o)
 	}
-	return &redisRequestLimiter{rdb: nil, opts: o}
+	return &redisRequestLimiter{rdb: data.Redis(), opts: o}
 }
 
 func (limiter *redisRequestLimiter) Limit(key string) error {

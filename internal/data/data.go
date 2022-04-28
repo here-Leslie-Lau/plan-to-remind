@@ -16,6 +16,10 @@ type Data struct {
 	redis *RedisClient
 }
 
+func (d *Data) Redis() *RedisClient {
+	return d.redis
+}
+
 func (d *Data) WithCtx(ctx context.Context) *gorm.DB {
 	return d.db.WithContext(ctx)
 }
@@ -25,5 +29,5 @@ func NewData(db *gorm.DB, nacos config_client.IConfigClient, redis *RedisClient)
 		fmt.Println("closing data...")
 		redis.Close()
 	}
-	return &Data{db: db, nacos: nacos}, closeFunc, nil
+	return &Data{db: db, nacos: nacos, redis: redis}, closeFunc, nil
 }

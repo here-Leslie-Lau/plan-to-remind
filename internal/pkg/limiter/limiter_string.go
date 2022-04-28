@@ -1,5 +1,7 @@
 package limiter
 
+import "fmt"
+
 type LimitExpireTyp uint32
 
 const (
@@ -10,5 +12,6 @@ const (
 var limitExpireTimes = []LimitExpireTyp{LimitExpireThreeSecond, LimitExpireFiveSecond}
 
 func GetCompletePlanKey(planId uint64) string {
-	return "user::request::complete::plan::%d"
+	key := fmt.Sprintf("user::request::complete::plan::%d", planId)
+	return key
 }
