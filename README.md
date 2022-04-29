@@ -37,6 +37,7 @@ todo
 - mysql port:3306
 - pulsar port:6650
 - nacos port:8848
+- redis port:6379
 
 ## how to run this project
 
