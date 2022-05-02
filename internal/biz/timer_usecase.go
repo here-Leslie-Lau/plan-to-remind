@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"fmt"
 	"github.com/apache/pulsar-client-go/pulsar"
 	klog "github.com/go-kratos/kratos/v2/log"
 	"plan-to-remind/internal/conf"
@@ -52,6 +53,7 @@ func (uc *TimerUsecase) UserPlanPush(ctx context.Context) error {
 			continue
 		}
 		dur := uc.parser.Parser(p.Expression)
+		fmt.Println("========", dur)
 		if dur == 0 {
 			uc.log.Debug("UserPlanPush Parser cron_expression continue", "duration:", dur)
 			continue
@@ -69,6 +71,7 @@ type cronParser struct{}
 // Parser 简陋版时间解析器实现,仅仅扫描当日的,todo 后续迭代更多功能
 func (c *cronParser) Parser(expression string) time.Duration {
 	now := time.Now()
+	nowDur := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, now.Location())
 	list := strings.Split(expression, " ")
 	if len(list) != 5 {
 		return 0
@@ -87,7 +90,7 @@ func (c *cronParser) Parser(expression string) time.Duration {
 		return 0
 	}
 	dur := time.Date(now.Year(), now.Month(), now.Day(), int(hour), int(min), 0, 0, now.Location())
-	return dur.Sub(now)
+	return dur.Sub(nowDur)
 }
 
 func (uc *TimerUsecase) PlanToInvalid(ctx context.Context) error {
